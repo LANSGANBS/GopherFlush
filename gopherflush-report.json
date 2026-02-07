@@ -1,0 +1,15 @@
+{
+  "TotalFiles": 1,
+  "TotalViolations": 1,
+  "Violations": [
+    {
+      "RuleName": "function-size",
+      "Severity": 0,
+      "FilePath": "test\\large_function.go",
+      "Line": 6,
+      "Column": 1,
+      "Message": "函数 'LargeFunction' 过大：共 213 行（阈值：200 行）",
+      "Suggestion": "考虑将函数拆分为多个较小的函数，提高代码可读性和可维护性"
+    }
+  ]
+}

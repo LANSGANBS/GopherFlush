@@ -1,0 +1,32 @@
+# GopherFlush 默认配置
+
+rules:
+  # 文件大小检测
+  file_size:
+    enabled: true
+    max_lines: 800
+
+  # 函数大小检测
+  function_size:
+    enabled: true
+    max_lines: 200
+
+  # 全局变量检测
+  global_vars:
+    enabled: true
+
+  # 重复代码检测
+  duplicates:
+    enabled: true
+
+# 输出配置
+output:
+  format: console  # console 或 json
+  path: ""         # JSON输出路径（仅当format为json时使用）
+
+# 排除目录
+exclude:
+  - vendor/
+  - node_modules/
+  - .git/
+  - "**/*_test.go"
