@@ -51,6 +51,18 @@ func (l *Loader) LoadDefault() *Config {
 			CommentedCode: CommentedCodeConfig{
 				Enabled: true,
 			},
+			InconsistentComment: InconsistentCommentConfig{
+				Enabled: true,
+			},
+			ResourceLeak: ResourceLeakConfig{
+				Enabled: true,
+			},
+			LooseTyping: LooseTypingConfig{
+				Enabled: true,
+			},
+			InaccurateConstant: InaccurateConstantConfig{
+				Enabled: true,
+			},
 		},
 		Output: OutputConfig{
 			Format: "console",

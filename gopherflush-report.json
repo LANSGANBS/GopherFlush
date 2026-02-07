@@ -1,69 +1,33 @@
 {
   "TotalFiles": 1,
-  "TotalViolations": 7,
+  "TotalViolations": 3,
   "Violations": [
     {
-      "RuleName": "commented-code",
-      "Severity": 2,
-      "FilePath": "./test/commented_code_test.go",
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "./test/inconsistent_comment_test.go",
       "Line": 5,
       "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '5' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
     },
     {
-      "RuleName": "commented-code",
-      "Severity": 0,
-      "FilePath": "./test/commented_code_test.go",
-      "Line": 6,
-      "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 0,
-      "FilePath": "./test/commented_code_test.go",
-      "Line": 7,
-      "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
+      "RuleName": "inconsistent-comment",
       "Severity": 1,
-      "FilePath": "./test/commented_code_test.go",
-      "Line": 17,
+      "FilePath": "./test/inconsistent_comment_test.go",
+      "Line": 8,
       "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '30' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
     },
     {
-      "RuleName": "commented-code",
+      "RuleName": "inconsistent-comment",
       "Severity": 1,
-      "FilePath": "./test/commented_code_test.go",
-      "Line": 20,
+      "FilePath": "./test/inconsistent_comment_test.go",
+      "Line": 11,
       "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 0,
-      "FilePath": "./test/commented_code_test.go",
-      "Line": 27,
-      "Column": 2,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 0,
-      "FilePath": "./test/commented_code_test.go",
-      "Line": 29,
-      "Column": 2,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '1024' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
     }
   ]
 }

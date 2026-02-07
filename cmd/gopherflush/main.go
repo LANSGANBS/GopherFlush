@@ -160,6 +160,26 @@ func initializeRules(cfg *config.Config, ruleNames string) *rules.Registry {
 		registry.Register(builtin.NewCommentedCodeRule())
 	}
 
+	// 注册不一致注释规则
+	if shouldEnableRule("inconsistent-comment", selectedRules, cfg.Rules.InconsistentComment.Enabled) {
+		registry.Register(builtin.NewInconsistentCommentRule())
+	}
+
+	// 注册资源泄漏规则
+	if shouldEnableRule("resource-leak", selectedRules, cfg.Rules.ResourceLeak.Enabled) {
+		registry.Register(builtin.NewResourceLeakRule())
+	}
+
+	// 注册宽泛类型规则
+	if shouldEnableRule("loose-typing", selectedRules, cfg.Rules.LooseTyping.Enabled) {
+		registry.Register(builtin.NewLooseTypingRule())
+	}
+
+	// 注册不准确常量规则
+	if shouldEnableRule("inaccurate-constant", selectedRules, cfg.Rules.InaccurateConstant.Enabled) {
+		registry.Register(builtin.NewInaccurateConstantRule())
+	}
+
 	return registry
 }
 
