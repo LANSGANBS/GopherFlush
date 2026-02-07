@@ -1,33 +1,51 @@
 {
   "TotalFiles": 1,
-  "TotalViolations": 3,
+  "TotalViolations": 5,
   "Violations": [
     {
-      "RuleName": "inconsistent-comment",
+      "RuleName": "hardcoded-secrets",
       "Severity": 1,
-      "FilePath": "./test/inconsistent_comment_test.go",
-      "Line": 5,
-      "Column": 1,
-      "Message": "检测到注释与代码不一致：注释中提到的数字 '5' 与代码中的实际值不匹配",
-      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+      "FilePath": "./test/hardcoded_secrets_test.go",
+      "Line": 4,
+      "Column": 21,
+      "Message": "检测到硬编码的URL: APIEndpoint",
+      "Suggestion": "将URL配置移到配置文件或环境变量中"
     },
     {
-      "RuleName": "inconsistent-comment",
-      "Severity": 1,
-      "FilePath": "./test/inconsistent_comment_test.go",
-      "Line": 8,
-      "Column": 1,
-      "Message": "检测到注释与代码不一致：注释中提到的数字 '30' 与代码中的实际值不匹配",
-      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+      "RuleName": "hardcoded-secrets",
+      "Severity": 2,
+      "FilePath": "./test/hardcoded_secrets_test.go",
+      "Line": 7,
+      "Column": 18,
+      "Message": "检测到硬编码的API token或密钥: APIToken",
+      "Suggestion": "将敏感信息移到环境变量或密钥管理系统中"
     },
     {
-      "RuleName": "inconsistent-comment",
+      "RuleName": "hardcoded-secrets",
+      "Severity": 2,
+      "FilePath": "./test/hardcoded_secrets_test.go",
+      "Line": 10,
+      "Column": 20,
+      "Message": "检测到硬编码的数据库连接字符串",
+      "Suggestion": "将数据库连接信息移到配置文件或环境变量中"
+    },
+    {
+      "RuleName": "hardcoded-secrets",
+      "Severity": 2,
+      "FilePath": "./test/hardcoded_secrets_test.go",
+      "Line": 13,
+      "Column": 17,
+      "Message": "检测到硬编码的API token或密钥: SecretKey",
+      "Suggestion": "将敏感信息移到环境变量或密钥管理系统中"
+    },
+    {
+      "RuleName": "hardcoded-secrets",
       "Severity": 1,
-      "FilePath": "./test/inconsistent_comment_test.go",
-      "Line": 11,
-      "Column": 1,
-      "Message": "检测到注释与代码不一致：注释中提到的数字 '1024' 与代码中的实际值不匹配",
-      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+      "FilePath": "./test/hardcoded_secrets_test.go",
+      "Line": 16,
+      "Column": 32,
+      "Message": "检测到硬编码的URL: APIEndpointPlaceholder",
+      "Suggestion": "将URL配置移到配置文件或环境变量中"
     }
   ]
 }

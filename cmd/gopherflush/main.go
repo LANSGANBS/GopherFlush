@@ -180,6 +180,16 @@ func initializeRules(cfg *config.Config, ruleNames string) *rules.Registry {
 		registry.Register(builtin.NewInaccurateConstantRule())
 	}
 
+	// 注册缺少验证规则
+	if shouldEnableRule("missing-validation", selectedRules, cfg.Rules.MissingValidation.Enabled) {
+		registry.Register(builtin.NewMissingValidationRule())
+	}
+
+	// 注册硬编码配置规则
+	if shouldEnableRule("hardcoded-secrets", selectedRules, cfg.Rules.HardcodedSecrets.Enabled) {
+		registry.Register(builtin.NewHardcodedSecretsRule())
+	}
+
 	return registry
 }
 

@@ -63,6 +63,12 @@ func (l *Loader) LoadDefault() *Config {
 			InaccurateConstant: InaccurateConstantConfig{
 				Enabled: true,
 			},
+			MissingValidation: MissingValidationConfig{
+				Enabled: true,
+			},
+			HardcodedSecrets: HardcodedSecretsConfig{
+				Enabled: true,
+			},
 		},
 		Output: OutputConfig{
 			Format: "console",

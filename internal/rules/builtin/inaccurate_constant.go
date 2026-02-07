@@ -101,7 +101,7 @@ func (r *InaccurateConstantRule) checkConstant(name string, value ast.Expr, fset
 		position := fset.Position(value.Pos())
 		return &types.Violation{
 			RuleName:   r.Name(),
-			Severity:   types.SeverityLow,
+			Severity:   types.SeverityHigh,
 			FilePath:   filePath,
 			Line:       position.Line,
 			Column:     position.Column,

@@ -18,6 +18,8 @@ type RulesConfig struct {
 	ResourceLeak        ResourceLeakConfig        `yaml:"resource_leak"`
 	LooseTyping         LooseTypingConfig         `yaml:"loose_typing"`
 	InaccurateConstant  InaccurateConstantConfig  `yaml:"inaccurate_constant"`
+	MissingValidation   MissingValidationConfig   `yaml:"missing_validation"`
+	HardcodedSecrets    HardcodedSecretsConfig    `yaml:"hardcoded_secrets"`
 }
 
 // FileSizeConfig 文件大小规则配置
@@ -64,6 +66,16 @@ type LooseTypingConfig struct {
 
 // InaccurateConstantConfig 不准确常量规则配置
 type InaccurateConstantConfig struct {
+	Enabled bool `yaml:"enabled"`
+}
+
+// MissingValidationConfig 缺少验证规则配置
+type MissingValidationConfig struct {
+	Enabled bool `yaml:"enabled"`
+}
+
+// HardcodedSecretsConfig 硬编码配置规则配置
+type HardcodedSecretsConfig struct {
 	Enabled bool `yaml:"enabled"`
 }
 
