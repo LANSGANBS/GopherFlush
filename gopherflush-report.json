@@ -1,6 +1,6 @@
 {
-  "TotalFiles": 2,
-  "TotalViolations": 4,
+  "TotalFiles": 3,
+  "TotalViolations": 7,
   "Violations": [
     {
       "RuleName": "global-vars",
@@ -36,6 +36,33 @@
       "Line": 11,
       "Column": 5,
       "Message": "检测到全局变量 'debugMode'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\test.py",
+      "Line": 4,
+      "Column": 1,
+      "Message": "检测到全局变量 'global_config' [Python]",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\test.py",
+      "Line": 5,
+      "Column": 1,
+      "Message": "检测到全局变量 'DEBUG_MODE' [Python]",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\test.py",
+      "Line": 6,
+      "Column": 1,
+      "Message": "检测到全局变量 'cache_data' [Python]",
       "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     }
   ]
