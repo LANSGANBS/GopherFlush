@@ -1,16 +1,19 @@
 # GopherFlush
 
-AI生成代码质量检测工具 - 帮助你清理代码中的"坏味道"
+AI生成代码质量检测工具 - 帮助你清理代码中的"屎"
 
 ## 📋 项目简介
 
 GopherFlush 是一个专门用于检测 AI 生成代码质量问题的工具。它可以识别常见的代码异味，如过大的文件和函数、全局变量滥用、重复代码等，帮助你保持代码库的健康和可维护性。
+
+**支持的语言**：目前仅支持 **Go 语言**（使用 Go AST 解析器）
 
 ## ✨ 功能特性
 
 ### 已实现的检测规则
 
 **"一坨大的"检测**
+
 - 文件大小检测：识别超过 800 行的文件
 - 函数大小检测：识别超过 200 行的函数
 - 严重程度分级：低、中等、严重、极其严重（带颜色标记）
@@ -33,17 +36,20 @@ GopherFlush 是一个专门用于检测 AI 生成代码质量问题的工具。�
 ### 方法一：从源码编译
 
 1. 克隆仓库
+
 ```bash
 git clone <repository-url>
 cd GopherFlush
 ```
 
 2. 下载依赖
+
 ```bash
 go mod tidy
 ```
 
 3. 编译项目
+
 ```bash
 # Windows
 go build -o bin/gopherflush.exe ./cmd/gopherflush
@@ -92,12 +98,15 @@ gopherflush -path ./src -rules file-size,function-size
 进入交互模式后，可以使用以下命令：
 
 #### `/help` - 查看帮助
+
 ```
 gopherflush> /help
 ```
+
 显示所有可用命令及其用法。
 
 #### `/show` - 显示信息
+
 ```
 gopherflush> /show flags      # 显示所有命令行参数
 gopherflush> /show rules      # 显示所有检测规则
@@ -105,6 +114,7 @@ gopherflush> /show config     # 显示配置文件格式
 ```
 
 #### `/run` - 运行检测
+
 ```
 gopherflush> /run                                    # 检测当前目录
 gopherflush> /run ./src                              # 检测指定目录
@@ -113,6 +123,7 @@ gopherflush> /run . --rules=file-size,function-size  # 运行多个规则
 ```
 
 #### `/exit` - 退出程序
+
 ```
 gopherflush> /exit
 ```
@@ -183,12 +194,14 @@ gopherflush -path ./src -config custom.yaml
 ### 报告内容
 
 **控制台输出**：
+
 - 检测文件总数
 - 问题总数
 - 按严重程度统计
 - 按文件分组的详细信息
 
 **JSON 报告**：
+
 - 完整的违规记录
 - 文件路径、行号、列号
 - 违规描述和修复建议
@@ -220,8 +233,8 @@ rules:
 
 # 输出配置
 output:
-  format: console  # console 或 json
-  path: ""         # JSON输出路径
+  format: console # console 或 json
+  path: "" # JSON输出路径
 
 # 排除目录
 exclude:
@@ -238,6 +251,7 @@ exclude:
 检测文件是否超过指定行数（默认 800 行）。
 
 **严重程度分级**：
+
 - 800-1000 行：低
 - 1000-1500 行：中等
 - 1500-2000 行：严重
@@ -250,6 +264,7 @@ exclude:
 检测函数是否超过指定行数（默认 200 行）。
 
 **严重程度分级**：
+
 - 200-300 行：低
 - 300-500 行：中等
 - 500-800 行：严重
@@ -259,7 +274,14 @@ exclude:
 
 ### 3. 全局变量检测 (global-vars)
 
-检测全局变量滥用（开发中）。
+检测全局变量的使用和滥用。
+
+**严重程度分级**：
+
+- 可导出的全局变量（大写开头）：严重
+- 不可导出的全局变量（小写开头）：中等
+
+**建议**：考虑将全局变量改为局部变量、函数参数或使用依赖注入模式。
 
 ### 4. 重复代码检测 (duplicates)
 
@@ -377,4 +399,3 @@ make clean
 ---
 
 **GopherFlush** - 让你的代码保持清新！🚽✨
-

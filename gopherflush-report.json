@@ -1,15 +1,42 @@
 {
-  "TotalFiles": 1,
-  "TotalViolations": 1,
+  "TotalFiles": 2,
+  "TotalViolations": 4,
   "Violations": [
     {
-      "RuleName": "function-size",
-      "Severity": 0,
-      "FilePath": "test\\large_function.go",
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\global_vars_test.go",
       "Line": 6,
-      "Column": 1,
-      "Message": "函数 'LargeFunction' 过大：共 213 行（阈值：200 行）",
-      "Suggestion": "考虑将函数拆分为多个较小的函数，提高代码可读性和可维护性"
+      "Column": 5,
+      "Message": "检测到全局变量 'GlobalConfig'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\global_vars_test.go",
+      "Line": 7,
+      "Column": 5,
+      "Message": "检测到全局变量 'GlobalCounter'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "test\\global_vars_test.go",
+      "Line": 10,
+      "Column": 5,
+      "Message": "检测到全局变量 'internalCache'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "test\\global_vars_test.go",
+      "Line": 11,
+      "Column": 5,
+      "Message": "检测到全局变量 'debugMode'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     }
   ]
 }

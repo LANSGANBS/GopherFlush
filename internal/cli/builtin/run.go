@@ -7,6 +7,7 @@ import (
 	"gopherflush/internal/reporter"
 	"gopherflush/internal/rules"
 	rulesBuiltin "gopherflush/internal/rules/builtin"
+	"path/filepath"
 	"strings"
 )
 
@@ -72,7 +73,12 @@ func (c *RunCommand) Execute(args []string) error {
 	if err := jsonReporter.Generate(report); err != nil {
 		fmt.Printf("\n警告: 生成详细报告失败: %v\n", err)
 	} else {
-		fmt.Printf("\n详细报告已保存到: %s\n", outputPath)
+		// 获取绝对路径
+		absPath, err := filepath.Abs(outputPath)
+		if err != nil {
+			absPath = outputPath // 如果获取失败，使用相对路径
+		}
+		fmt.Printf("\n详细报告已保存到: %s\n", absPath)
 	}
 
 	return nil
