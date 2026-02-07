@@ -155,6 +155,11 @@ func initializeRules(cfg *config.Config, ruleNames string) *rules.Registry {
 		registry.Register(builtin.NewDuplicatesRule())
 	}
 
+	// 注册注释代码规则
+	if shouldEnableRule("commented-code", selectedRules, cfg.Rules.CommentedCode.Enabled) {
+		registry.Register(builtin.NewCommentedCodeRule())
+	}
+
 	return registry
 }
 

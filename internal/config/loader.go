@@ -48,6 +48,9 @@ func (l *Loader) LoadDefault() *Config {
 			Duplicates: DuplicatesConfig{
 				Enabled: true,
 			},
+			CommentedCode: CommentedCodeConfig{
+				Enabled: true,
+			},
 		},
 		Output: OutputConfig{
 			Format: "console",

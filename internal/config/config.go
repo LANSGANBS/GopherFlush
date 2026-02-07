@@ -9,10 +9,11 @@ type Config struct {
 
 // RulesConfig 规则配置
 type RulesConfig struct {
-	FileSize     FileSizeConfig     `yaml:"file_size"`
-	FunctionSize FunctionSizeConfig `yaml:"function_size"`
-	GlobalVars   GlobalVarsConfig   `yaml:"global_vars"`
-	Duplicates   DuplicatesConfig   `yaml:"duplicates"`
+	FileSize      FileSizeConfig      `yaml:"file_size"`
+	FunctionSize  FunctionSizeConfig  `yaml:"function_size"`
+	GlobalVars    GlobalVarsConfig    `yaml:"global_vars"`
+	Duplicates    DuplicatesConfig    `yaml:"duplicates"`
+	CommentedCode CommentedCodeConfig `yaml:"commented_code"`
 }
 
 // FileSizeConfig 文件大小规则配置
@@ -34,6 +35,11 @@ type GlobalVarsConfig struct {
 
 // DuplicatesConfig 重复代码规则配置
 type DuplicatesConfig struct {
+	Enabled bool `yaml:"enabled"`
+}
+
+// CommentedCodeConfig 注释代码规则配置
+type CommentedCodeConfig struct {
 	Enabled bool `yaml:"enabled"`
 }
 
