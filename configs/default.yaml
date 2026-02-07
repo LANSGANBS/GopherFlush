@@ -21,8 +21,8 @@ rules:
 
 # 输出配置
 output:
-  format: console  # console 或 json
-  path: ""         # JSON输出路径（仅当format为json时使用）
+  format: console # console 或 json
+  path: "" # JSON输出路径（仅当format为json时使用）
 
 # 排除目录
 exclude:
@@ -30,3 +30,4 @@ exclude:
   - node_modules/
   - .git/
   - "**/*_test.go"
+  - "**/*.pb.go"
