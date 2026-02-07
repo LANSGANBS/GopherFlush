@@ -1,51 +1,204 @@
 {
-  "TotalFiles": 1,
-  "TotalViolations": 5,
+  "TotalFiles": 48,
+  "TotalViolations": 22,
   "Violations": [
     {
-      "RuleName": "hardcoded-secrets",
+      "RuleName": "global-vars",
       "Severity": 1,
-      "FilePath": "./test/hardcoded_secrets_test.go",
-      "Line": 4,
-      "Column": 21,
-      "Message": "检测到硬编码的URL: APIEndpoint",
-      "Suggestion": "将URL配置移到配置文件或环境变量中"
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\c_detector.go",
+      "Line": 9,
+      "Column": 5,
+      "Message": "检测到全局变量 'cFuncPattern'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
-      "RuleName": "hardcoded-secrets",
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\c_detector.go",
+      "Line": 49,
+      "Column": 5,
+      "Message": "检测到全局变量 'cGlobalPattern'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\java_detector.go",
+      "Line": 9,
+      "Column": 5,
+      "Message": "检测到全局变量 'javaFuncPattern'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\java_detector.go",
+      "Line": 35,
+      "Column": 5,
+      "Message": "检测到全局变量 'javaFieldPattern'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\python_detector.go",
+      "Line": 9,
+      "Column": 5,
+      "Message": "检测到全局变量 'pythonFuncPattern'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\python_detector.go",
+      "Line": 65,
+      "Column": 5,
+      "Message": "检测到全局变量 'pythonGlobalPattern'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\rules\\builtin\\inaccurate_constant.go",
+      "Line": 40,
+      "Column": 5,
+      "Message": "检测到全局变量 'knownConstants'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\commented_code_test.go",
+      "Line": 18,
+      "Column": 5,
+      "Message": "检测到全局变量 'newConfig'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "duplicates",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\duplicates_test.go",
+      "Line": 8,
+      "Column": 1,
+      "Message": "检测到 2 个重复函数: ProcessUserData, ProcessCustomerData",
+      "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
+    },
+    {
+      "RuleName": "duplicates",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\duplicates_test.go",
+      "Line": 28,
+      "Column": 1,
+      "Message": "检测到 2 个重复函数: ValidateEmail, CheckEmail",
+      "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
+    },
+    {
+      "RuleName": "global-vars",
       "Severity": 2,
-      "FilePath": "./test/hardcoded_secrets_test.go",
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\global_vars_test.go",
+      "Line": 6,
+      "Column": 5,
+      "Message": "检测到全局变量 'GlobalConfig'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\global_vars_test.go",
       "Line": 7,
-      "Column": 18,
-      "Message": "检测到硬编码的API token或密钥: APIToken",
-      "Suggestion": "将敏感信息移到环境变量或密钥管理系统中"
+      "Column": 5,
+      "Message": "检测到全局变量 'GlobalCounter'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
-      "RuleName": "hardcoded-secrets",
-      "Severity": 2,
-      "FilePath": "./test/hardcoded_secrets_test.go",
-      "Line": 10,
-      "Column": 20,
-      "Message": "检测到硬编码的数据库连接字符串",
-      "Suggestion": "将数据库连接信息移到配置文件或环境变量中"
-    },
-    {
-      "RuleName": "hardcoded-secrets",
-      "Severity": 2,
-      "FilePath": "./test/hardcoded_secrets_test.go",
-      "Line": 13,
-      "Column": 17,
-      "Message": "检测到硬编码的API token或密钥: SecretKey",
-      "Suggestion": "将敏感信息移到环境变量或密钥管理系统中"
-    },
-    {
-      "RuleName": "hardcoded-secrets",
+      "RuleName": "global-vars",
       "Severity": 1,
-      "FilePath": "./test/hardcoded_secrets_test.go",
-      "Line": 16,
-      "Column": 32,
-      "Message": "检测到硬编码的URL: APIEndpointPlaceholder",
-      "Suggestion": "将URL配置移到配置文件或环境变量中"
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\global_vars_test.go",
+      "Line": 10,
+      "Column": 5,
+      "Message": "检测到全局变量 'internalCache'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\global_vars_test.go",
+      "Line": 11,
+      "Column": 5,
+      "Message": "检测到全局变量 'debugMode'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\hardcoded_secrets_test.go",
+      "Line": 10,
+      "Column": 5,
+      "Message": "检测到全局变量 'DBConnection'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\hardcoded_secrets_test.go",
+      "Line": 13,
+      "Column": 5,
+      "Message": "检测到全局变量 'SecretKey'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\inconsistent_comment_test.go",
+      "Line": 9,
+      "Column": 5,
+      "Message": "检测到全局变量 'Timeout'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\inconsistent_comment_test.go",
+      "Line": 12,
+      "Column": 5,
+      "Message": "检测到全局变量 'BufferSize'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "duplicates",
+      "Severity": 1,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\loose_typing_test.go",
+      "Line": 4,
+      "Column": 1,
+      "Message": "检测到 3 个重复函数: StoreUserInfo, GetConfig, SaveUser",
+      "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\test.py",
+      "Line": 4,
+      "Column": 1,
+      "Message": "检测到全局变量 'global_config' [Python]",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\test.py",
+      "Line": 5,
+      "Column": 1,
+      "Message": "检测到全局变量 'DEBUG_MODE' [Python]",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\test.py",
+      "Line": 6,
+      "Column": 1,
+      "Message": "检测到全局变量 'cache_data' [Python]",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     }
   ]
 }
