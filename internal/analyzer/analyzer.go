@@ -1,11 +1,14 @@
 package analyzer
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"gopherflush/internal/rules"
 	"gopherflush/pkg/types"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Analyzer 代码分析器
@@ -104,14 +107,22 @@ func (a *Analyzer) analyzeTextFile(filePath string, lang Language, report *types
 		return nil
 	}
 
-	// 检测文件大小
-	a.checkFileSize(fileInfo, report)
+	// 只运行启用的规则对应的检测
+	if a.isRuleEnabled("file-size") {
+		a.checkFileSize(fileInfo, report)
+	}
 
-	// 检测函数大小
-	a.checkFunctionSize(fileInfo, report)
+	if a.isRuleEnabled("function-size") {
+		a.checkFunctionSize(fileInfo, report)
+	}
 
-	// 检测全局变量
-	a.checkGlobalVars(fileInfo, report)
+	if a.isRuleEnabled("global-vars") {
+		a.checkGlobalVars(fileInfo, report)
+	}
+
+	if a.isRuleEnabled("duplicates") {
+		a.checkDuplicates(fileInfo, report)
+	}
 
 	return nil
 }
@@ -209,4 +220,124 @@ func (a *Analyzer) checkGlobalVars(fileInfo *FileInfo, report *types.Report) {
 		report.Violations = append(report.Violations, violation)
 		report.TotalViolations++
 	}
+}
+
+// checkDuplicates 检测重复函数
+func (a *Analyzer) checkDuplicates(fileInfo *FileInfo, report *types.Report) {
+	// 收集函数内容和哈希值
+	type funcWithHash struct {
+		info *FunctionInfo
+		hash string
+	}
+
+	funcsWithHash := make([]funcWithHash, 0, len(fileInfo.Functions))
+
+	for _, fn := range fileInfo.Functions {
+		// 提取函数内容
+		content := a.extractFunctionContent(fileInfo.Lines, fn.StartLine, fn.EndLine)
+
+		// 标准化并计算哈希
+		normalized := a.normalizeTextContent(content)
+		hash := a.calculateTextHash(normalized)
+
+		funcsWithHash = append(funcsWithHash, funcWithHash{
+			info: fn,
+			hash: hash,
+		})
+	}
+
+	// 查找重复
+	hashMap := make(map[string][]*FunctionInfo)
+	for _, fh := range funcsWithHash {
+		// 跳过空函数
+		if fh.hash == a.calculateTextHash("") {
+			continue
+		}
+		hashMap[fh.hash] = append(hashMap[fh.hash], fh.info)
+	}
+
+	// 生成违规记录
+	for _, funcs := range hashMap {
+		if len(funcs) < 2 {
+			continue
+		}
+
+		// 收集函数名
+		funcNames := make([]string, 0, len(funcs))
+		for _, fn := range funcs {
+			funcNames = append(funcNames, fn.Name)
+		}
+
+		// 确定严重程度
+		severity := types.SeverityMedium
+		if len(funcs) > 3 {
+			severity = types.SeverityHigh
+		}
+
+		// 只为第一个函数创建违规记录
+		fn := funcs[0]
+		message := fmt.Sprintf("检测到 %d 个重复函数: %s [%s]", len(funcs),
+			strings.Join(funcNames, ", "), fileInfo.Language)
+
+		violation := &types.Violation{
+			RuleName:   "duplicates",
+			Severity:   severity,
+			FilePath:   fileInfo.Path,
+			Line:       fn.StartLine,
+			Column:     1,
+			Message:    message,
+			Suggestion: "考虑提取公共逻辑到一个函数中，避免代码重复",
+		}
+
+		report.Violations = append(report.Violations, violation)
+		report.TotalViolations++
+	}
+}
+
+// extractFunctionContent 提取函数内容
+func (a *Analyzer) extractFunctionContent(lines []string, startLine, endLine int) string {
+	if startLine < 1 || endLine > len(lines) || startLine > endLine {
+		return ""
+	}
+
+	// 注意：行号是从1开始的，但数组索引是从0开始的
+	content := ""
+	for i := startLine - 1; i < endLine && i < len(lines); i++ {
+		content += lines[i] + "\n"
+	}
+	return content
+}
+
+// normalizeTextContent 标准化文本内容（去除空白、换行等）
+func (a *Analyzer) normalizeTextContent(content string) string {
+	// 去除所有空白字符
+	normalized := ""
+	for _, ch := range content {
+		if ch != ' ' && ch != '\t' && ch != '\n' && ch != '\r' {
+			normalized += string(ch)
+		}
+	}
+	return normalized
+}
+
+// calculateTextHash 计算文本内容的哈希值
+func (a *Analyzer) calculateTextHash(content string) string {
+	hash := md5.Sum([]byte(content))
+	return hex.EncodeToString(hash[:])
+}
+
+// joinStrings 连接字符串数组
+func (a *Analyzer) joinStrings(strs []string, sep string) string {
+	return strings.Join(strs, sep)
+}
+
+// isRuleEnabled 检查规则是否启用
+func (a *Analyzer) isRuleEnabled(ruleName string) bool {
+	rules := a.registry.GetAll()
+	for _, rule := range rules {
+		if rule.Name() == ruleName {
+			return true
+		}
+	}
+	return false
 }
