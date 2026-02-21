@@ -1,83 +1,92 @@
 {
-  "TotalFiles": 48,
-  "TotalViolations": 22,
+  "TotalFiles": 12,
+  "TotalViolations": 58,
   "Violations": [
     {
       "RuleName": "global-vars",
       "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\c_detector.go",
-      "Line": 9,
-      "Column": 5,
-      "Message": "检测到全局变量 'cFuncPattern'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "global-vars",
-      "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\c_detector.go",
-      "Line": 49,
-      "Column": 5,
-      "Message": "检测到全局变量 'cGlobalPattern'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "global-vars",
-      "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\java_detector.go",
-      "Line": 9,
-      "Column": 5,
-      "Message": "检测到全局变量 'javaFuncPattern'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "global-vars",
-      "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\java_detector.go",
-      "Line": 35,
-      "Column": 5,
-      "Message": "检测到全局变量 'javaFieldPattern'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "global-vars",
-      "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\python_detector.go",
-      "Line": 9,
-      "Column": 5,
-      "Message": "检测到全局变量 'pythonFuncPattern'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "global-vars",
-      "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\analyzer\\python_detector.go",
-      "Line": 65,
-      "Column": 5,
-      "Message": "检测到全局变量 'pythonGlobalPattern'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "global-vars",
-      "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\internal\\rules\\builtin\\inaccurate_constant.go",
-      "Line": 40,
-      "Column": 5,
-      "Message": "检测到全局变量 'knownConstants'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "global-vars",
-      "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\commented_code_test.go",
+      "FilePath": "test\\commented_code_test.go",
       "Line": 18,
       "Column": 5,
       "Message": "检测到全局变量 'newConfig'",
       "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
+      "RuleName": "commented-code",
+      "Severity": 2,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 5,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 6,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 7,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 1,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 17,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 1,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 20,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 27,
+      "Column": 2,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 29,
+      "Column": 2,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 20,
+      "Column": 1,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '3' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
       "RuleName": "duplicates",
       "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\duplicates_test.go",
+      "FilePath": "test\\duplicates_test.go",
       "Line": 8,
       "Column": 1,
       "Message": "检测到 2 个重复函数: ProcessUserData, ProcessCustomerData",
@@ -86,7 +95,7 @@
     {
       "RuleName": "duplicates",
       "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\duplicates_test.go",
+      "FilePath": "test\\duplicates_test.go",
       "Line": 28,
       "Column": 1,
       "Message": "检测到 2 个重复函数: ValidateEmail, CheckEmail",
@@ -95,7 +104,97 @@
     {
       "RuleName": "global-vars",
       "Severity": 2,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\global_vars_test.go",
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 3,
+      "Column": 5,
+      "Message": "检测到全局变量 'GlobalVar1'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 4,
+      "Column": 5,
+      "Message": "检测到全局变量 'globalVar2'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 21,
+      "Column": 2,
+      "Message": "检测到全局变量 'PackageVar1'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 22,
+      "Column": 2,
+      "Message": "检测到全局变量 'PackageVar2'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 25,
+      "Column": 5,
+      "Message": "检测到全局变量 'ComplexGlobal'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 29,
+      "Column": 5,
+      "Message": "检测到全局变量 'SliceGlobal'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 31,
+      "Column": 5,
+      "Message": "检测到全局变量 'FuncGlobal'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 36,
+      "Column": 2,
+      "Message": "检测到全局变量 '_'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 40,
+      "Column": 2,
+      "Message": "检测到全局变量 'ExportedGlobal'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "test\\edge_cases_test.go",
+      "Line": 41,
+      "Column": 2,
+      "Message": "检测到全局变量 'unexportedGlobal'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\global_vars_test.go",
       "Line": 6,
       "Column": 5,
       "Message": "检测到全局变量 'GlobalConfig'",
@@ -104,7 +203,7 @@
     {
       "RuleName": "global-vars",
       "Severity": 2,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\global_vars_test.go",
+      "FilePath": "test\\global_vars_test.go",
       "Line": 7,
       "Column": 5,
       "Message": "检测到全局变量 'GlobalCounter'",
@@ -113,7 +212,7 @@
     {
       "RuleName": "global-vars",
       "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\global_vars_test.go",
+      "FilePath": "test\\global_vars_test.go",
       "Line": 10,
       "Column": 5,
       "Message": "检测到全局变量 'internalCache'",
@@ -122,7 +221,7 @@
     {
       "RuleName": "global-vars",
       "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\global_vars_test.go",
+      "FilePath": "test\\global_vars_test.go",
       "Line": 11,
       "Column": 5,
       "Message": "检测到全局变量 'debugMode'",
@@ -131,7 +230,7 @@
     {
       "RuleName": "global-vars",
       "Severity": 2,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\hardcoded_secrets_test.go",
+      "FilePath": "test\\hardcoded_secrets_test.go",
       "Line": 10,
       "Column": 5,
       "Message": "检测到全局变量 'DBConnection'",
@@ -140,16 +239,97 @@
     {
       "RuleName": "global-vars",
       "Severity": 2,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\hardcoded_secrets_test.go",
+      "FilePath": "test\\hardcoded_secrets_test.go",
       "Line": 13,
       "Column": 5,
       "Message": "检测到全局变量 'SecretKey'",
       "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
+      "RuleName": "hardcoded-secrets",
+      "Severity": 1,
+      "FilePath": "test\\hardcoded_secrets_test.go",
+      "Line": 4,
+      "Column": 21,
+      "Message": "检测到硬编码的URL: APIEndpoint",
+      "Suggestion": "将URL配置移到配置文件或环境变量中"
+    },
+    {
+      "RuleName": "hardcoded-secrets",
+      "Severity": 2,
+      "FilePath": "test\\hardcoded_secrets_test.go",
+      "Line": 7,
+      "Column": 18,
+      "Message": "检测到硬编码的API token或密钥: APIToken",
+      "Suggestion": "将敏感信息移到环境变量或密钥管理系统中"
+    },
+    {
+      "RuleName": "hardcoded-secrets",
+      "Severity": 2,
+      "FilePath": "test\\hardcoded_secrets_test.go",
+      "Line": 10,
+      "Column": 20,
+      "Message": "检测到硬编码的数据库连接字符串",
+      "Suggestion": "将数据库连接信息移到配置文件或环境变量中"
+    },
+    {
+      "RuleName": "hardcoded-secrets",
+      "Severity": 2,
+      "FilePath": "test\\hardcoded_secrets_test.go",
+      "Line": 13,
+      "Column": 17,
+      "Message": "检测到硬编码的API token或密钥: SecretKey",
+      "Suggestion": "将敏感信息移到环境变量或密钥管理系统中"
+    },
+    {
+      "RuleName": "hardcoded-secrets",
+      "Severity": 1,
+      "FilePath": "test\\hardcoded_secrets_test.go",
+      "Line": 16,
+      "Column": 32,
+      "Message": "检测到硬编码的URL: APIEndpointPlaceholder",
+      "Suggestion": "将URL配置移到配置文件或环境变量中"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\inaccurate_constant_test.go",
+      "Line": 13,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 1,
+      "FilePath": "test\\inaccurate_constant_test.go",
+      "Line": 14,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "inaccurate-constant",
+      "Severity": 2,
+      "FilePath": "test\\inaccurate_constant_test.go",
+      "Line": 4,
+      "Column": 12,
+      "Message": "常量 'PI' 的值不准确，当前值: 3.14159265353846，正确值应为: 3.141592653589793",
+      "Suggestion": "使用更准确的常量值，或使用标准库中的常量（如 math.Pi）"
+    },
+    {
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\inaccurate_constant_test.go",
+      "Line": 4,
+      "Column": 29,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '3.14159265358979' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
       "RuleName": "global-vars",
       "Severity": 2,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\inconsistent_comment_test.go",
+      "FilePath": "test\\inconsistent_comment_test.go",
       "Line": 9,
       "Column": 5,
       "Message": "检测到全局变量 'Timeout'",
@@ -158,47 +338,191 @@
     {
       "RuleName": "global-vars",
       "Severity": 2,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\inconsistent_comment_test.go",
+      "FilePath": "test\\inconsistent_comment_test.go",
       "Line": 12,
       "Column": 5,
       "Message": "检测到全局变量 'BufferSize'",
       "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\inconsistent_comment_test.go",
+      "Line": 5,
+      "Column": 1,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '5' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\inconsistent_comment_test.go",
+      "Line": 8,
+      "Column": 1,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '30' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\inconsistent_comment_test.go",
+      "Line": 11,
+      "Column": 1,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '1024' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\large_function.go",
+      "Line": 7,
+      "Column": 2,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '200' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\loose_typing_test.go",
+      "Line": 3,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\loose_typing_test.go",
+      "Line": 9,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "loose-typing",
+      "Severity": 1,
+      "FilePath": "test\\loose_typing_test.go",
+      "Line": 4,
+      "Column": 20,
+      "Message": "函数 'StoreUserInfo' 的参数使用了过于宽泛的类型 interface{}",
+      "Suggestion": "使用具体的类型或定义明确的接口，以提供更好的类型安全性"
+    },
+    {
+      "RuleName": "loose-typing",
+      "Severity": 1,
+      "FilePath": "test\\loose_typing_test.go",
+      "Line": 10,
+      "Column": 28,
+      "Message": "函数 'GetConfig' 的返回值使用了过于宽泛的类型 interface{}",
+      "Suggestion": "使用具体的类型或定义明确的接口，以提供更好的类型安全性"
+    },
+    {
+      "RuleName": "loose-typing",
+      "Severity": 1,
+      "FilePath": "test\\loose_typing_test.go",
+      "Line": 15,
+      "Column": 18,
+      "Message": "函数 'ProcessData' 的参数使用了过于宽泛的类型 interface{}",
+      "Suggestion": "使用具体的类型或定义明确的接口，以提供更好的类型安全性"
+    },
+    {
+      "RuleName": "loose-typing",
+      "Severity": 1,
+      "FilePath": "test\\loose_typing_test.go",
+      "Line": 15,
+      "Column": 29,
+      "Message": "函数 'ProcessData' 的返回值使用了过于宽泛的类型 interface{}",
+      "Suggestion": "使用具体的类型或定义明确的接口，以提供更好的类型安全性"
+    },
+    {
       "RuleName": "duplicates",
       "Severity": 1,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\loose_typing_test.go",
+      "FilePath": "test\\loose_typing_test.go",
       "Line": 4,
       "Column": 1,
       "Message": "检测到 3 个重复函数: StoreUserInfo, GetConfig, SaveUser",
       "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
     },
     {
-      "RuleName": "global-vars",
+      "RuleName": "missing-validation",
       "Severity": 2,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\test.py",
-      "Line": 4,
-      "Column": 1,
-      "Message": "检测到全局变量 'global_config' [Python]",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+      "FilePath": "test\\missing_validation_test.go",
+      "Line": 11,
+      "Column": 11,
+      "Message": "使用字符串拼接构建SQL语句，存在SQL注入风险",
+      "Suggestion": "使用参数化查询（PreparedStatement）代替字符串拼接"
     },
     {
-      "RuleName": "global-vars",
+      "RuleName": "missing-validation",
       "Severity": 2,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\test.py",
-      "Line": 5,
-      "Column": 1,
-      "Message": "检测到全局变量 'DEBUG_MODE' [Python]",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+      "FilePath": "test\\missing_validation_test.go",
+      "Line": 12,
+      "Column": 12,
+      "Message": "数据库操作可能缺少输入验证，存在SQL注入风险",
+      "Suggestion": "使用参数化查询（PreparedStatement）或对输入进行严格验证"
     },
     {
-      "RuleName": "global-vars",
+      "RuleName": "missing-validation",
       "Severity": 2,
-      "FilePath": "C:\\Users\\70510\\Desktop\\Others\\Project\\GopherFlush\\test\\test.py",
-      "Line": 6,
+      "FilePath": "test\\missing_validation_test.go",
+      "Line": 22,
+      "Column": 12,
+      "Message": "数据库操作可能缺少输入验证，存在SQL注入风险",
+      "Suggestion": "使用参数化查询（PreparedStatement）或对输入进行严格验证"
+    },
+    {
+      "RuleName": "missing-validation",
+      "Severity": 2,
+      "FilePath": "test\\missing_validation_test.go",
+      "Line": 22,
+      "Column": 20,
+      "Message": "使用字符串拼接构建SQL语句，存在SQL注入风险",
+      "Suggestion": "使用参数化查询（PreparedStatement）代替字符串拼接"
+    },
+    {
+      "RuleName": "missing-validation",
+      "Severity": 2,
+      "FilePath": "test\\missing_validation_test.go",
+      "Line": 22,
+      "Column": 20,
+      "Message": "使用字符串拼接构建SQL语句，存在SQL注入风险",
+      "Suggestion": "使用参数化查询（PreparedStatement）代替字符串拼接"
+    },
+    {
+      "RuleName": "missing-validation",
+      "Severity": 2,
+      "FilePath": "test\\missing_validation_test.go",
+      "Line": 32,
+      "Column": 12,
+      "Message": "数据库操作可能缺少输入验证，存在SQL注入风险",
+      "Suggestion": "使用参数化查询（PreparedStatement）或对输入进行严格验证"
+    },
+    {
+      "RuleName": "resource-leak",
+      "Severity": 2,
+      "FilePath": "test\\resource_leak_test.go",
+      "Line": 11,
       "Column": 1,
-      "Message": "检测到全局变量 'cache_data' [Python]",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+      "Message": "变量 'file' 分配了文件但没有使用defer进行释放",
+      "Suggestion": "在资源分配后立即添加 defer file.Close() 以确保资源被正确释放"
+    },
+    {
+      "RuleName": "resource-leak",
+      "Severity": 2,
+      "FilePath": "test\\resource_leak_test.go",
+      "Line": 25,
+      "Column": 1,
+      "Message": "变量 'resp' 分配了HTTP响应但没有使用defer进行释放",
+      "Suggestion": "在资源分配后立即添加 defer resp.Body.Close() 以确保资源被正确释放"
+    },
+    {
+      "RuleName": "resource-leak",
+      "Severity": 3,
+      "FilePath": "test\\resource_leak_test.go",
+      "Line": 39,
+      "Column": 1,
+      "Message": "变量 'db' 分配了数据库连接但没有使用defer进行释放",
+      "Suggestion": "在资源分配后立即添加 defer db.Close() 以确保资源被正确释放"
     }
   ]
 }

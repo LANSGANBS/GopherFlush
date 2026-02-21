@@ -3,7 +3,7 @@ package test
 import "time"
 
 // 设置最大重试次数为5
-const MaxRetries = 3
+const MaxRetriesInconsistent = 3
 
 // 设置超时时间为30秒
 var Timeout = 60 * time.Second

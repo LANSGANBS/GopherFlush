@@ -15,8 +15,18 @@ import (
 	"strings"
 )
 
+var (
+	colorReset  = "\033[0m"
+	colorRed    = "\033[31m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorCyan   = "\033[36m"
+	colorWhite  = "\033[37m"
+	colorBold   = "\033[1m"
+	colorDim    = "\033[90m"
+)
+
 func main() {
-	// 定义命令行参数
 	var (
 		interactive = flag.Bool("interactive", false, "启动交互模式")
 		path        = flag.String("path", ".", "要检测的代码路径")
@@ -28,87 +38,85 @@ func main() {
 
 	flag.Parse()
 
-	// 加载配置
 	cfg := loadConfig(*configFile)
 
-	// 如果没有提供任何参数或明确指定交互模式，进入交互模式
 	if *interactive || (flag.NFlag() == 0 && len(os.Args) == 1) {
 		startInteractiveMode(cfg, flag.CommandLine)
 		return
 	}
 
-	// 否则执行一次性检测
 	runOnceMode(cfg, *path, *ruleNames, *format, *outputPath)
 }
 
-// startInteractiveMode 启动交互模式
 func startInteractiveMode(cfg *config.Config, flagSet *flag.FlagSet) {
-	// 初始化命令注册中心
 	cmdRegistry := cli.NewRegistry()
 
-	// 注册内置命令
 	cmdRegistry.Register(cliBuiltin.NewHelpCommand(cmdRegistry))
 	cmdRegistry.Register(cliBuiltin.NewShowCommand(flagSet))
 	cmdRegistry.Register(cliBuiltin.NewRunCommand(cfg))
 	cmdRegistry.Register(cliBuiltin.NewExitCommand())
 
-	// 启动 REPL
 	repl := cli.NewREPL(cmdRegistry)
 	repl.Start()
 }
 
-// runOnceMode 执行一次性检测
 func runOnceMode(cfg *config.Config, path, ruleNames, format, outputPath string) {
-	fmt.Println("GopherFlush - AI代码质量检测工具")
-	fmt.Println("========================================")
+	fmt.Println()
 
-	// 初始化规则注册表
+	printHeader("GopherFlush - 代码检测")
+
+	absPath, _ := filepath.Abs(path)
+	fmt.Printf("  %s检测路径:%s %s%s%s\n", colorDim, colorReset, colorCyan, absPath, colorReset)
+	fmt.Printf("  %s状态:%s     %s正在分析...%s\n", colorDim, colorReset, colorYellow, colorReset)
+	fmt.Println()
+
 	registry := initializeRules(cfg, ruleNames)
 
-	// 初始化分析器
 	a := analyzer.NewAnalyzer(registry)
 
-	// 执行代码检测
-	fmt.Printf("正在检测: %s\n", path)
 	report, err := a.Analyze(path)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "错误: %v\n", err)
+		fmt.Printf("  %s✗ 检测失败:%s %s\n", colorRed, colorReset, err.Error())
 		os.Exit(1)
 	}
 
-	// 生成控制台报告
 	consoleReporter := reporter.NewConsoleReporter()
 	if err := consoleReporter.Generate(report); err != nil {
 		fmt.Fprintf(os.Stderr, "生成报告失败: %v\n", err)
 		os.Exit(1)
 	}
 
-	// 生成详细报告文件
 	if format == "json" || outputPath != "" {
 		jsonReporter := reporter.NewJSONReporter(outputPath)
 		if err := jsonReporter.Generate(report); err != nil {
 			fmt.Fprintf(os.Stderr, "生成详细报告失败: %v\n", err)
 		} else {
-			// 获取绝对路径
-			absPath, err := filepath.Abs(outputPath)
+			absOutputPath, err := filepath.Abs(outputPath)
 			if err != nil {
-				absPath = outputPath // 如果获取失败，使用相对路径
+				absOutputPath = outputPath
 			}
-			fmt.Printf("\n详细报告已保存到: %s\n", absPath)
+			fmt.Printf("  %s✓ 详细报告已保存:%s %s\n", colorGreen, colorReset, absOutputPath)
 		}
 	}
 
-	// 如果有违规记录，返回非零退出码
+	fmt.Println()
+
 	if report.TotalViolations > 0 {
 		os.Exit(1)
 	}
 }
 
-// loadConfig 加载配置
+func printHeader(title string) {
+	width := 60
+	fmt.Printf("%s%s%s\n", colorCyan, strings.Repeat("─", width), colorReset)
+	padding := (width - len(title)) / 2
+	fmt.Printf("%s%s%s%s%s%s\n", colorCyan, strings.Repeat(" ", padding), colorBold+colorWhite, title, colorReset, colorReset)
+	fmt.Printf("%s%s%s\n", colorCyan, strings.Repeat("─", width), colorReset)
+}
+
 func loadConfig(configFile string) *config.Config {
 	loader := config.NewLoader()
 
-	// 如果指定了配置文件，尝试加载
 	if configFile != "" {
 		cfg, err := loader.Load(configFile)
 		if err != nil {
@@ -118,15 +126,12 @@ func loadConfig(configFile string) *config.Config {
 		return cfg
 	}
 
-	// 否则使用默认配置
 	return loader.LoadDefault()
 }
 
-// initializeRules 初始化规则注册表
 func initializeRules(cfg *config.Config, ruleNames string) *rules.Registry {
 	registry := rules.NewRegistry()
 
-	// 解析要运行的规则列表
 	var selectedRules map[string]bool
 	if ruleNames != "" {
 		selectedRules = make(map[string]bool)
@@ -135,57 +140,46 @@ func initializeRules(cfg *config.Config, ruleNames string) *rules.Registry {
 		}
 	}
 
-	// 注册文件大小规则
 	if shouldEnableRule("file-size", selectedRules, cfg.Rules.FileSize.Enabled) {
 		registry.Register(builtin.NewFileSizeRule(cfg.Rules.FileSize.MaxLines))
 	}
 
-	// 注册函数大小规则
 	if shouldEnableRule("function-size", selectedRules, cfg.Rules.FunctionSize.Enabled) {
 		registry.Register(builtin.NewFunctionSizeRule(cfg.Rules.FunctionSize.MaxLines))
 	}
 
-	// 注册全局变量规则
 	if shouldEnableRule("global-vars", selectedRules, cfg.Rules.GlobalVars.Enabled) {
 		registry.Register(builtin.NewGlobalVarsRule())
 	}
 
-	// 注册重复代码规则
 	if shouldEnableRule("duplicates", selectedRules, cfg.Rules.Duplicates.Enabled) {
 		registry.Register(builtin.NewDuplicatesRule())
 	}
 
-	// 注册注释代码规则
 	if shouldEnableRule("commented-code", selectedRules, cfg.Rules.CommentedCode.Enabled) {
 		registry.Register(builtin.NewCommentedCodeRule())
 	}
 
-	// 注册不一致注释规则
 	if shouldEnableRule("inconsistent-comment", selectedRules, cfg.Rules.InconsistentComment.Enabled) {
 		registry.Register(builtin.NewInconsistentCommentRule())
 	}
 
-	// 注册资源泄漏规则
 	if shouldEnableRule("resource-leak", selectedRules, cfg.Rules.ResourceLeak.Enabled) {
 		registry.Register(builtin.NewResourceLeakRule())
 	}
 
-	// 注册宽泛类型规则
 	if shouldEnableRule("loose-typing", selectedRules, cfg.Rules.LooseTyping.Enabled) {
 		registry.Register(builtin.NewLooseTypingRule())
 	}
 
-	// 注册不准确常量规则
 	if shouldEnableRule("inaccurate-constant", selectedRules, cfg.Rules.InaccurateConstant.Enabled) {
 		registry.Register(builtin.NewInaccurateConstantRule())
 	}
 
-	// 注册缺少验证规则
 	if shouldEnableRule("missing-validation", selectedRules, cfg.Rules.MissingValidation.Enabled) {
 		registry.Register(builtin.NewMissingValidationRule())
 	}
 
-	// 注册硬编码配置规则
 	if shouldEnableRule("hardcoded-secrets", selectedRules, cfg.Rules.HardcodedSecrets.Enabled) {
 		registry.Register(builtin.NewHardcodedSecretsRule())
 	}
@@ -193,12 +187,9 @@ func initializeRules(cfg *config.Config, ruleNames string) *rules.Registry {
 	return registry
 }
 
-// shouldEnableRule 判断是否应该启用规则
 func shouldEnableRule(ruleName string, selectedRules map[string]bool, configEnabled bool) bool {
-	// 如果指定了特定规则，只启用这些规则
 	if selectedRules != nil {
 		return selectedRules[ruleName]
 	}
-	// 否则根据配置决定
 	return configEnabled
 }

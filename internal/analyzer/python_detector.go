@@ -1,23 +1,31 @@
 package analyzer
 
 import (
-	"regexp"
 	"strings"
 )
 
-// Python 函数检测
-var pythonFuncPattern = regexp.MustCompile(`^\s*def\s+(\w+)\s*\(`)
-
 func (ta *TextAnalyzer) detectPythonFunctions(lines []string) []*FunctionInfo {
+	if ta.patterns == nil || ta.patterns.FuncPattern == nil {
+		return nil
+	}
+
 	functions := []*FunctionInfo{}
+	pattern := ta.patterns.FuncPattern
 
 	for i, line := range lines {
-		if matches := pythonFuncPattern.FindStringSubmatch(line); matches != nil {
+		if matches := pattern.FindStringSubmatch(line); matches != nil {
 			funcName := matches[1]
-			startLine := i + 1
 
-			// 检测函数结束位置（通过缩进）
-			endLine := ta.findPythonFunctionEnd(lines, i)
+			if IsKeyword(funcName) {
+				continue
+			}
+
+			if !IsValidIdentifier(funcName) {
+				continue
+			}
+
+			startLine := i + 1
+			endLine := ta.findPythonFunctionEndEnhanced(lines, i)
 
 			functions = append(functions, &FunctionInfo{
 				Name:      funcName,
@@ -31,73 +39,142 @@ func (ta *TextAnalyzer) detectPythonFunctions(lines []string) []*FunctionInfo {
 	return functions
 }
 
-func (ta *TextAnalyzer) findPythonFunctionEnd(lines []string, startIdx int) int {
+func (ta *TextAnalyzer) findPythonFunctionEndEnhanced(lines []string, startIdx int) int {
 	if startIdx >= len(lines) {
 		return startIdx + 1
 	}
 
-	// 获取函数定义的缩进级别
 	defLine := lines[startIdx]
-	baseIndent := len(defLine) - len(strings.TrimLeft(defLine, " \t"))
+	baseIndent := CalculateIndent(defLine)
 
-	// 查找函数结束位置
+	funcBodyIndent := -1
+	foundBody := false
+
 	for i := startIdx + 1; i < len(lines); i++ {
-		line := strings.TrimRight(lines[i], " \t\r\n")
+		line := lines[i]
+		trimmed := strings.TrimRight(line, " \t\r\n")
 
-		// 跳过空行和注释
-		if line == "" || strings.TrimSpace(line) == "" {
+		if trimmed == "" || strings.TrimSpace(trimmed) == "" {
 			continue
 		}
 
-		// 计算当前行的缩进
-		currentIndent := len(lines[i]) - len(strings.TrimLeft(lines[i], " \t"))
+		if strings.HasPrefix(strings.TrimSpace(trimmed), "#") {
+			continue
+		}
 
-		// 如果缩进回到或小于函数定义级别，说明函数结束
+		currentIndent := CalculateIndent(line)
+
+		if !foundBody {
+			if currentIndent > baseIndent {
+				funcBodyIndent = currentIndent
+				foundBody = true
+			} else if currentIndent <= baseIndent {
+				return i
+			}
+			continue
+		}
+
 		if currentIndent <= baseIndent {
+			if strings.HasPrefix(trimmed, "@") {
+				continue
+			}
 			return i
+		}
+
+		if currentIndent < funcBodyIndent && !strings.HasPrefix(trimmed, "else:") &&
+			!strings.HasPrefix(trimmed, "elif ") && !strings.HasPrefix(trimmed, "except") &&
+			!strings.HasPrefix(trimmed, "finally:") {
+			if strings.HasPrefix(trimmed, "if ") || strings.HasPrefix(trimmed, "for ") ||
+				strings.HasPrefix(trimmed, "while ") || strings.HasPrefix(trimmed, "try:") ||
+				strings.HasPrefix(trimmed, "with ") || strings.HasPrefix(trimmed, "class ") {
+				continue
+			}
 		}
 	}
 
 	return len(lines)
 }
 
-// Python 全局变量检测
-var pythonGlobalPattern = regexp.MustCompile(`^(\w+)\s*=`)
-
 func (ta *TextAnalyzer) detectPythonGlobals(lines []string) []*GlobalVarInfo {
+	if ta.patterns == nil || ta.patterns.GlobalPattern == nil {
+		return nil
+	}
+
 	globals := []*GlobalVarInfo{}
+	pattern := ta.patterns.GlobalPattern
+
+	indentStack := []int{0}
 	inFunction := false
+	functionIndent := -1
+	inClass := false
+	classIndent := -1
 
 	for i, line := range lines {
 		trimmed := strings.TrimSpace(line)
+		currentIndent := CalculateIndent(line)
 
-		// 检测是否进入函数
-		if pythonFuncPattern.MatchString(line) {
-			inFunction = true
+		if trimmed == "" || strings.HasPrefix(trimmed, "#") {
 			continue
 		}
 
-		// 检测是否退出函数（缩进回到顶层）
-		if inFunction && len(line) > 0 && line[0] != ' ' && line[0] != '\t' {
-			inFunction = false
+		if strings.HasPrefix(trimmed, "def ") {
+			if currentIndent == 0 || (inClass && currentIndent > classIndent) {
+				inFunction = true
+				functionIndent = currentIndent
+			}
+			continue
 		}
 
-		// 只检测顶层的变量赋值
-		if !inFunction && pythonGlobalPattern.MatchString(trimmed) {
-			matches := pythonGlobalPattern.FindStringSubmatch(trimmed)
-			if matches != nil {
+		if strings.HasPrefix(trimmed, "class ") {
+			inClass = true
+			classIndent = currentIndent
+			continue
+		}
+
+		if inFunction && currentIndent <= functionIndent {
+			inFunction = false
+			functionIndent = -1
+		}
+
+		if inClass && currentIndent <= classIndent {
+			inClass = false
+			classIndent = -1
+		}
+
+		if !inFunction && currentIndent == 0 {
+			if matches := pattern.FindStringSubmatch(trimmed); matches != nil {
 				varName := matches[1]
-				// 排除一些常见的非全局变量模式
-				if !strings.HasPrefix(trimmed, "if ") &&
-				   !strings.HasPrefix(trimmed, "for ") &&
-				   !strings.HasPrefix(trimmed, "while ") {
-					globals = append(globals, &GlobalVarInfo{
-						Name:       varName,
-						Line:       i + 1,
-						IsExported: true, // Python 没有明确的导出概念
-					})
+
+				if IsKeyword(varName) {
+					continue
 				}
+
+				if !IsValidIdentifier(varName) {
+					continue
+				}
+
+				if strings.HasPrefix(trimmed, "if ") ||
+					strings.HasPrefix(trimmed, "for ") ||
+					strings.HasPrefix(trimmed, "while ") ||
+					strings.HasPrefix(trimmed, "with ") ||
+					strings.HasPrefix(trimmed, "try:") ||
+					strings.HasPrefix(trimmed, "except") ||
+					strings.HasPrefix(trimmed, "elif ") ||
+					strings.HasPrefix(trimmed, "else:") {
+					continue
+				}
+
+				globals = append(globals, &GlobalVarInfo{
+					Name:       varName,
+					Line:       i + 1,
+					IsExported: !strings.HasPrefix(varName, "_"),
+				})
 			}
+		}
+
+		indentStack = append(indentStack, currentIndent)
+		if len(indentStack) > 100 {
+			indentStack = indentStack[1:]
 		}
 	}
 

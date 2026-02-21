@@ -1,23 +1,45 @@
 package analyzer
 
 import (
-	"regexp"
 	"strings"
 )
 
-// Java 函数检测
-var javaFuncPattern = regexp.MustCompile(`^\s*(?:public|private|protected|static|\s)+[\w<>\[\]]+\s+(\w+)\s*\(`)
-
 func (ta *TextAnalyzer) detectJavaFunctions(lines []string) []*FunctionInfo {
+	if ta.patterns == nil || ta.patterns.FuncPattern == nil {
+		return nil
+	}
+
 	functions := []*FunctionInfo{}
+	pattern := ta.patterns.FuncPattern
 
 	for i, line := range lines {
-		if matches := javaFuncPattern.FindStringSubmatch(line); matches != nil {
-			funcName := matches[1]
-			startLine := i + 1
+		trimmed := strings.TrimSpace(line)
 
-			// 检测函数结束位置（通过大括号）
-			endLine := ta.findBracketEnd(lines, i)
+		if strings.HasPrefix(trimmed, "//") || strings.HasPrefix(trimmed, "/*") || strings.HasPrefix(trimmed, "*") {
+			continue
+		}
+
+		cleanLine := StripComments(line, "java")
+
+		if matches := pattern.FindStringSubmatch(cleanLine); matches != nil {
+			funcName := matches[1]
+
+			if IsKeyword(funcName) {
+				continue
+			}
+
+			if !IsValidIdentifier(funcName) {
+				continue
+			}
+
+			if strings.Contains(cleanLine, "class ") && strings.Contains(cleanLine, "{") {
+				if !strings.Contains(cleanLine, "(") {
+					continue
+				}
+			}
+
+			startLine := i + 1
+			endLine := ta.findBracketEndEnhanced(lines, i)
 
 			functions = append(functions, &FunctionInfo{
 				Name:      funcName,
@@ -31,41 +53,86 @@ func (ta *TextAnalyzer) detectJavaFunctions(lines []string) []*FunctionInfo {
 	return functions
 }
 
-// Java 全局变量检测（类字段）
-var javaFieldPattern = regexp.MustCompile(`^\s*(?:public|private|protected|static|\s)+[\w<>\[\]]+\s+(\w+)\s*[;=]`)
-
 func (ta *TextAnalyzer) detectJavaGlobals(lines []string) []*GlobalVarInfo {
+	if ta.patterns == nil || ta.patterns.GlobalPattern == nil {
+		return nil
+	}
+
 	globals := []*GlobalVarInfo{}
+	pattern := ta.patterns.GlobalPattern
+
+	braceStack := []int{}
 	inMethod := false
-	braceLevel := 0
+	classDepth := 0
+	inClass := false
 
 	for i, line := range lines {
 		trimmed := strings.TrimSpace(line)
 
-		// 跟踪大括号层级
-		braceLevel += strings.Count(line, "{") - strings.Count(line, "}")
-
-		// 检测是否在方法内
-		if javaFuncPattern.MatchString(line) {
-			inMethod = true
+		if strings.HasPrefix(trimmed, "//") || strings.HasPrefix(trimmed, "/*") || strings.HasPrefix(trimmed, "*") {
+			continue
 		}
 
-		// 如果大括号层级回到1，说明退出了方法
-		if inMethod && braceLevel <= 1 {
-			inMethod = false
+		cleanLine := StripComments(line, "java")
+
+		if strings.Contains(cleanLine, "class ") || strings.Contains(cleanLine, "interface ") ||
+			strings.Contains(cleanLine, "enum ") || strings.Contains(cleanLine, "@interface ") {
+			for _, ch := range cleanLine {
+				if ch == '{' {
+					classDepth++
+					inClass = true
+				}
+			}
 		}
 
-		// 只检测类级别的字段（不在方法内）
-		if !inMethod && braceLevel == 1 && javaFieldPattern.MatchString(trimmed) {
-			matches := javaFieldPattern.FindStringSubmatch(trimmed)
-			if matches != nil {
+		openBraces := strings.Count(cleanLine, "{")
+		closeBraces := strings.Count(cleanLine, "}")
+
+		for j := 0; j < openBraces; j++ {
+			if len(braceStack) == 0 && ta.patterns.FuncPattern != nil {
+				if ta.patterns.FuncPattern.MatchString(cleanLine) {
+					inMethod = true
+				}
+			}
+			braceStack = append(braceStack, i)
+		}
+
+		for j := 0; j < closeBraces; j++ {
+			if len(braceStack) > 0 {
+				braceStack = braceStack[:len(braceStack)-1]
+			}
+			if len(braceStack) <= 1 {
+				inMethod = false
+			}
+			if len(braceStack) == 0 {
+				classDepth--
+				if classDepth <= 0 {
+					inClass = false
+					classDepth = 0
+				}
+			}
+		}
+
+		if inClass && !inMethod && len(braceStack) == 1 {
+			if matches := pattern.FindStringSubmatch(trimmed); matches != nil {
 				varName := matches[1]
-				isExported := strings.Contains(line, "public")
+
+				if IsKeyword(varName) {
+					continue
+				}
+
+				if !IsValidIdentifier(varName) {
+					continue
+				}
+
+				if strings.Contains(cleanLine, "(") && strings.Contains(cleanLine, ")") {
+					continue
+				}
 
 				globals = append(globals, &GlobalVarInfo{
 					Name:       varName,
 					Line:       i + 1,
-					IsExported: isExported,
+					IsExported: strings.Contains(line, "public"),
 				})
 			}
 		}

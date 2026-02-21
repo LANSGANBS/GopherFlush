@@ -1,37 +1,39 @@
 package analyzer
 
 import (
-	"regexp"
 	"strings"
 )
 
-// C/C++ 函数检测
-var cFuncPattern = regexp.MustCompile(`^\s*[\w\*\s]+\s+(\w+)\s*\([^)]*\)\s*\{?`)
-
 func (ta *TextAnalyzer) detectCFunctions(lines []string) []*FunctionInfo {
+	if ta.patterns == nil || ta.patterns.FuncPattern == nil {
+		return nil
+	}
+
 	functions := []*FunctionInfo{}
+	pattern := ta.patterns.FuncPattern
 
 	for i, line := range lines {
 		trimmed := strings.TrimSpace(line)
 
-		// 跳过预处理指令和注释
 		if strings.HasPrefix(trimmed, "#") || strings.HasPrefix(trimmed, "//") {
 			continue
 		}
 
-		if matches := cFuncPattern.FindStringSubmatch(line); matches != nil {
+		cleanLine := StripComments(line, "c")
+
+		if matches := pattern.FindStringSubmatch(cleanLine); matches != nil {
 			funcName := matches[1]
 
-			// 排除一些常见的非函数模式
-			if funcName == "if" || funcName == "while" || funcName == "for" ||
-			   funcName == "switch" || funcName == "return" {
+			if IsKeyword(funcName) {
+				continue
+			}
+
+			if !IsValidIdentifier(funcName) {
 				continue
 			}
 
 			startLine := i + 1
-
-			// 检测函数结束位置（通过大括号）
-			endLine := ta.findBracketEnd(lines, i)
+			endLine := ta.findBracketEndEnhanced(lines, i)
 
 			functions = append(functions, &FunctionInfo{
 				Name:      funcName,
@@ -45,49 +47,64 @@ func (ta *TextAnalyzer) detectCFunctions(lines []string) []*FunctionInfo {
 	return functions
 }
 
-// C/C++ 全局变量检测
-var cGlobalPattern = regexp.MustCompile(`^\s*(?:extern\s+)?(?:static\s+)?[\w\*]+\s+(\w+)\s*[;=]`)
-
 func (ta *TextAnalyzer) detectCGlobals(lines []string) []*GlobalVarInfo {
+	if ta.patterns == nil || ta.patterns.GlobalPattern == nil {
+		return nil
+	}
+
 	globals := []*GlobalVarInfo{}
+	pattern := ta.patterns.GlobalPattern
+
+	braceStack := []int{}
 	inFunction := false
-	braceLevel := 0
 
 	for i, line := range lines {
 		trimmed := strings.TrimSpace(line)
 
-		// 跳过预处理指令和注释
 		if strings.HasPrefix(trimmed, "#") || strings.HasPrefix(trimmed, "//") {
 			continue
 		}
 
-		// 跟踪大括号层级
-		braceLevel += strings.Count(line, "{") - strings.Count(line, "}")
+		cleanLine := StripComments(line, "c")
 
-		// 检测是否在函数内
-		if cFuncPattern.MatchString(line) && strings.Contains(line, "{") {
-			inFunction = true
+		openBraces := strings.Count(cleanLine, "{")
+		closeBraces := strings.Count(cleanLine, "}")
+
+		for j := 0; j < openBraces; j++ {
+			if len(braceStack) == 0 && ta.patterns.FuncPattern != nil {
+				if ta.patterns.FuncPattern.MatchString(cleanLine) || (i > 0 && ta.patterns.FuncPattern.MatchString(lines[i-1])) {
+					inFunction = true
+				}
+			}
+			braceStack = append(braceStack, i)
 		}
 
-		// 如果大括号层级回到0，说明退出了函数
-		if inFunction && braceLevel == 0 {
-			inFunction = false
+		for j := 0; j < closeBraces; j++ {
+			if len(braceStack) > 0 {
+				braceStack = braceStack[:len(braceStack)-1]
+			}
+			if len(braceStack) == 0 {
+				inFunction = false
+			}
 		}
 
-		// 只检测文件级别的变量（不在函数内）
-		if !inFunction && braceLevel == 0 && cGlobalPattern.MatchString(trimmed) {
-			matches := cGlobalPattern.FindStringSubmatch(trimmed)
-			if matches != nil {
+		if !inFunction && len(braceStack) == 0 {
+			if matches := pattern.FindStringSubmatch(trimmed); matches != nil {
 				varName := matches[1]
 
-				// 排除一些常见的非变量模式
-				if varName != "typedef" && varName != "struct" && varName != "enum" {
-					globals = append(globals, &GlobalVarInfo{
-						Name:       varName,
-						Line:       i + 1,
-						IsExported: !strings.Contains(line, "static"),
-					})
+				if IsKeyword(varName) {
+					continue
 				}
+
+				if !IsValidIdentifier(varName) {
+					continue
+				}
+
+				globals = append(globals, &GlobalVarInfo{
+					Name:       varName,
+					Line:       i + 1,
+					IsExported: !strings.Contains(line, "static"),
+				})
 			}
 		}
 	}
@@ -95,22 +112,75 @@ func (ta *TextAnalyzer) detectCGlobals(lines []string) []*GlobalVarInfo {
 	return globals
 }
 
-// findBracketEnd 查找大括号结束位置（通用方法）
-func (ta *TextAnalyzer) findBracketEnd(lines []string, startIdx int) int {
+func (ta *TextAnalyzer) findBracketEndEnhanced(lines []string, startIdx int) int {
 	braceCount := 0
 	foundStart := false
+	inMultiLineComment := false
 
 	for i := startIdx; i < len(lines); i++ {
 		line := lines[i]
 
-		for _, ch := range line {
-			if ch == '{' {
-				braceCount++
-				foundStart = true
-			} else if ch == '}' {
-				braceCount--
-				if foundStart && braceCount == 0 {
-					return i + 1
+		processedLine := ""
+		j := 0
+		for j < len(line) {
+			if inMultiLineComment {
+				if j+1 < len(line) && line[j:j+2] == "*/" {
+					inMultiLineComment = false
+					j += 2
+					continue
+				}
+				j++
+				continue
+			}
+
+			if j+1 < len(line) && line[j:j+2] == "/*" {
+				inMultiLineComment = true
+				j += 2
+				continue
+			}
+
+			if j+1 < len(line) && line[j:j+2] == "//" {
+				break
+			}
+
+			processedLine += string(line[j])
+			j++
+		}
+
+		inString := false
+		inChar := false
+		escape := false
+
+		for _, ch := range processedLine {
+			if escape {
+				escape = false
+				continue
+			}
+
+			switch ch {
+			case '\\':
+				if inString || inChar {
+					escape = true
+				}
+			case '"':
+				if !inChar {
+					inString = !inString
+				}
+			case '\'':
+				if !inString {
+					inChar = !inChar
+				}
+			case '{':
+				if !inString && !inChar {
+					braceCount++
+					foundStart = true
+				}
+			case '}':
+				if !inString && !inChar {
+					braceCount--
+					if foundStart && braceCount == 0 {
+						return i + 1
+					}
 				}
 			}
 		}

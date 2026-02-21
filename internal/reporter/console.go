@@ -3,12 +3,11 @@ package reporter
 import (
 	"fmt"
 	"gopherflush/pkg/types"
+	"strings"
 )
 
-// ConsoleReporter 控制台报告器
 type ConsoleReporter struct{}
 
-// fileStats 文件统计信息
 type fileStats struct {
 	total    int
 	critical int
@@ -17,62 +16,102 @@ type fileStats struct {
 	low      int
 }
 
-// NewConsoleReporter 创建控制台报告器
 func NewConsoleReporter() *ConsoleReporter {
 	return &ConsoleReporter{}
 }
 
-// Generate 生成控制台报告
 func (r *ConsoleReporter) Generate(report *types.Report) error {
-	fmt.Println("\n========================================")
-	fmt.Println("检测结果")
-	fmt.Println("========================================")
+	fmt.Println()
 
-	// 如果没有违规记录，显示成功信息
 	if report.TotalViolations == 0 {
-		successMsg := fmt.Sprintf("✓ 检测完成: 共检测 %d 个文件，未发现问题", report.TotalFiles)
-		fmt.Println(Colorize(successMsg, ColorGreen))
+		r.printSuccessReport(report)
 		return nil
 	}
 
-	// 统计各严重程度的违规数量
-	severityStats := r.calculateSeverityStats(report)
-
-	// 显示总览
-	fmt.Printf("检测完成: 共检测 %d 个文件，发现 %d 个问题\n\n",
-		report.TotalFiles, report.TotalViolations)
-
-	fmt.Println("严重程度统计:")
-	fmt.Printf("  %s: %d\n", Colorize("极其严重", ColorRed), severityStats[types.SeverityCritical])
-	fmt.Printf("  %s:     %d\n", Colorize("严重", ColorOrange), severityStats[types.SeverityHigh])
-	fmt.Printf("  %s:     %d\n", Colorize("中等", ColorYellow), severityStats[types.SeverityMedium])
-	fmt.Printf("  %s:       %d\n", Colorize("低", ColorGreen), severityStats[types.SeverityLow])
-
-	// 按文件分组统计
-	fileStats := r.calculateFileStats(report)
-
-	fmt.Println("\n文件详情:")
-	for filePath, stats := range fileStats {
-		fmt.Printf("\n  %s: %d 个问题\n", filePath, stats.total)
-		if stats.critical > 0 {
-			fmt.Printf("    %s: %d\n", Colorize("极其严重", ColorRed), stats.critical)
-		}
-		if stats.high > 0 {
-			fmt.Printf("    %s:     %d\n", Colorize("严重", ColorOrange), stats.high)
-		}
-		if stats.medium > 0 {
-			fmt.Printf("    %s:     %d\n", Colorize("中等", ColorYellow), stats.medium)
-		}
-		if stats.low > 0 {
-			fmt.Printf("    %s:       %d\n", Colorize("低", ColorGreen), stats.low)
-		}
-	}
-
-	fmt.Println("\n========================================")
+	r.printViolationReport(report)
 	return nil
 }
 
-// calculateSeverityStats 统计各严重程度的违规数量
+func (r *ConsoleReporter) printSuccessReport(report *types.Report) {
+	printBox("✓ 检测完成", []string{
+		fmt.Sprintf("共检测 %d 个文件，未发现问题", report.TotalFiles),
+	}, ColorGreen)
+	fmt.Println()
+}
+
+func (r *ConsoleReporter) printViolationReport(report *types.Report) {
+	severityStats := r.calculateSeverityStats(report)
+
+	var lines []string
+	lines = append(lines, fmt.Sprintf("共检测 %d 个文件，发现 %d 个问题", report.TotalFiles, report.TotalViolations))
+	lines = append(lines, "")
+	lines = append(lines, "【严重程度统计】")
+
+	if severityStats[types.SeverityCritical] > 0 {
+		lines = append(lines, fmt.Sprintf("  极其严重: %d", severityStats[types.SeverityCritical]))
+	}
+	if severityStats[types.SeverityHigh] > 0 {
+		lines = append(lines, fmt.Sprintf("  严重:     %d", severityStats[types.SeverityHigh]))
+	}
+	if severityStats[types.SeverityMedium] > 0 {
+		lines = append(lines, fmt.Sprintf("  中等:     %d", severityStats[types.SeverityMedium]))
+	}
+	if severityStats[types.SeverityLow] > 0 {
+		lines = append(lines, fmt.Sprintf("  低:       %d", severityStats[types.SeverityLow]))
+	}
+
+	lines = append(lines, "")
+	lines = append(lines, "【文件详情】")
+
+	fileStats := r.calculateFileStats(report)
+	for filePath, stats := range fileStats {
+		lines = append(lines, "")
+		lines = append(lines, fmt.Sprintf("  %s", truncatePath(filePath, 50)))
+		lines = append(lines, fmt.Sprintf("    问题数: %d", stats.total))
+		if stats.critical > 0 {
+			lines = append(lines, fmt.Sprintf("      极其严重: %d", stats.critical))
+		}
+		if stats.high > 0 {
+			lines = append(lines, fmt.Sprintf("      严重:     %d", stats.high))
+		}
+		if stats.medium > 0 {
+			lines = append(lines, fmt.Sprintf("      中等:     %d", stats.medium))
+		}
+		if stats.low > 0 {
+			lines = append(lines, fmt.Sprintf("      低:       %d", stats.low))
+		}
+	}
+
+	printBox("检测结果", lines, ColorYellow)
+	fmt.Println()
+}
+
+func printBox(title string, lines []string, titleColor Color) {
+	width := 60
+
+	fmt.Printf("%s%s%s\n", ColorCyan, strings.Repeat("─", width), ColorReset)
+
+	centeredTitle := centerText(title, width)
+	fmt.Printf("%s%s%s%s%s\n", titleColor, ColorBold, centeredTitle, ColorReset, ColorReset)
+
+	fmt.Printf("%s%s%s\n", ColorCyan, strings.Repeat("─", width), ColorReset)
+
+	for _, line := range lines {
+		fmt.Printf("  %s\n", line)
+	}
+
+	fmt.Printf("%s%s%s\n", ColorCyan, strings.Repeat("─", width), ColorReset)
+}
+
+func centerText(text string, width int) string {
+	textLen := len(text)
+	if textLen >= width {
+		return text[:width]
+	}
+	padding := (width - textLen) / 2
+	return strings.Repeat(" ", padding) + text + strings.Repeat(" ", width-textLen-padding)
+}
+
 func (r *ConsoleReporter) calculateSeverityStats(report *types.Report) map[types.Severity]int {
 	stats := make(map[types.Severity]int)
 	for _, violation := range report.Violations {
@@ -81,7 +120,6 @@ func (r *ConsoleReporter) calculateSeverityStats(report *types.Report) map[types
 	return stats
 }
 
-// calculateFileStats 按文件分组统计违规
 func (r *ConsoleReporter) calculateFileStats(report *types.Report) map[string]*fileStats {
 	stats := make(map[string]*fileStats)
 
@@ -106,4 +144,11 @@ func (r *ConsoleReporter) calculateFileStats(report *types.Report) map[string]*f
 	}
 
 	return stats
+}
+
+func truncatePath(path string, maxLen int) string {
+	if len(path) <= maxLen {
+		return path
+	}
+	return "..." + path[len(path)-maxLen+3:]
 }

@@ -3,6 +3,7 @@ package builtin
 import (
 	"fmt"
 	"gopherflush/internal/analyzer"
+	"gopherflush/internal/cli"
 	"gopherflush/internal/config"
 	"gopherflush/internal/reporter"
 	"gopherflush/internal/rules"
@@ -11,12 +12,10 @@ import (
 	"strings"
 )
 
-// RunCommand 运行检测命令
 type RunCommand struct {
 	cfg *config.Config
 }
 
-// NewRunCommand 创建运行命令
 func NewRunCommand(cfg *config.Config) *RunCommand {
 	return &RunCommand{
 		cfg: cfg,
@@ -36,7 +35,6 @@ func (c *RunCommand) Usage() string {
 }
 
 func (c *RunCommand) Execute(args []string) error {
-	// 解析参数
 	path := "."
 	var ruleNames string
 
@@ -48,38 +46,52 @@ func (c *RunCommand) Execute(args []string) error {
 		}
 	}
 
-	// 初始化规则注册表
+	fmt.Println()
+
+	width := 60
+	fmt.Printf("%s%s%s\n", cli.ColorCyan, strings.Repeat("─", width), cli.ColorReset)
+
+	title := "代码检测"
+	padding := (width - len(title)) / 2
+	fmt.Printf("%s%s%s%s%s\n", cli.ColorCyan, strings.Repeat(" ", padding), cli.ColorBold+cli.ColorWhite, title, cli.ColorReset)
+
+	fmt.Printf("%s%s%s\n", cli.ColorCyan, strings.Repeat("─", width), cli.ColorReset)
+
+	absPath, _ := filepath.Abs(path)
+	fmt.Printf("  %s检测路径:%s %s%s%s\n", cli.ColorDim, cli.ColorReset, cli.ColorCyan, absPath, cli.ColorReset)
+	fmt.Printf("  %s状态:%s     %s正在分析...%s\n", cli.ColorDim, cli.ColorReset, cli.ColorYellow, cli.ColorReset)
+
+	fmt.Printf("%s%s%s\n", cli.ColorCyan, strings.Repeat("─", width), cli.ColorReset)
+
 	registry := c.initializeRules(ruleNames)
 
-	// 初始化分析器
 	a := analyzer.NewAnalyzer(registry)
 
-	// 执行代码检测
-	fmt.Printf("正在检测: %s\n", path)
 	report, err := a.Analyze(path)
 	if err != nil {
+		fmt.Println()
+		fmt.Printf("  %s✗ 检测失败:%s %s\n", cli.ColorRed, cli.ColorReset, err.Error())
 		return fmt.Errorf("检测失败: %w", err)
 	}
 
-	// 生成控制台报告
 	consoleReporter := reporter.NewConsoleReporter()
 	if err := consoleReporter.Generate(report); err != nil {
 		return fmt.Errorf("生成控制台报告失败: %w", err)
 	}
 
-	// 生成详细报告文件
 	outputPath := "gopherflush-report.json"
 	jsonReporter := reporter.NewJSONReporter(outputPath)
 	if err := jsonReporter.Generate(report); err != nil {
-		fmt.Printf("\n警告: 生成详细报告失败: %v\n", err)
+		fmt.Printf("  %s⚠ 详细报告生成失败:%s %s\n", cli.ColorYellow, cli.ColorReset, err.Error())
 	} else {
-		// 获取绝对路径
-		absPath, err := filepath.Abs(outputPath)
+		absOutputPath, err := filepath.Abs(outputPath)
 		if err != nil {
-			absPath = outputPath // 如果获取失败，使用相对路径
+			absOutputPath = outputPath
 		}
-		fmt.Printf("\n详细报告已保存到: %s\n", absPath)
+		fmt.Printf("  %s✓ 详细报告已保存:%s %s\n", cli.ColorGreen, cli.ColorReset, absOutputPath)
 	}
+
+	fmt.Println()
 
 	return nil
 }
@@ -87,7 +99,6 @@ func (c *RunCommand) Execute(args []string) error {
 func (c *RunCommand) initializeRules(ruleNames string) *rules.Registry {
 	registry := rules.NewRegistry()
 
-	// 解析要运行的规则列表
 	var selectedRules map[string]bool
 	if ruleNames != "" {
 		selectedRules = make(map[string]bool)
@@ -96,7 +107,6 @@ func (c *RunCommand) initializeRules(ruleNames string) *rules.Registry {
 		}
 	}
 
-	// 注册规则
 	if c.shouldEnableRule("file-size", selectedRules, c.cfg.Rules.FileSize.Enabled) {
 		registry.Register(rulesBuiltin.NewFileSizeRule(c.cfg.Rules.FileSize.MaxLines))
 	}

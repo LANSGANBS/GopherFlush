@@ -5,19 +5,29 @@ import (
 	"os"
 )
 
-// TextAnalyzer 通用文本分析器（用于非Go语言）
 type TextAnalyzer struct {
-	language Language
+	language       Language
+	patterns       *DetectorPatterns
+	patternRegistry *PatternRegistry
 }
 
-// NewTextAnalyzer 创建文本分析器
 func NewTextAnalyzer(language Language) *TextAnalyzer {
+	registry := NewPatternRegistry()
 	return &TextAnalyzer{
-		language: language,
+		language:        language,
+		patterns:        registry.Get(language),
+		patternRegistry: registry,
 	}
 }
 
-// AnalyzeFile 分析文件
+func NewTextAnalyzerWithRegistry(language Language, registry *PatternRegistry) *TextAnalyzer {
+	return &TextAnalyzer{
+		language:        language,
+		patterns:        registry.Get(language),
+		patternRegistry: registry,
+	}
+}
+
 func (ta *TextAnalyzer) AnalyzeFile(filePath string) (*FileInfo, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -34,24 +44,25 @@ func (ta *TextAnalyzer) AnalyzeFile(filePath string) (*FileInfo, error) {
 	}
 
 	scanner := bufio.NewScanner(file)
-	lineNum := 0
-
 	for scanner.Scan() {
-		lineNum++
 		line := scanner.Text()
 		info.Lines = append(info.Lines, line)
 	}
 
-	// 检测函数
 	info.Functions = ta.detectFunctions(info.Lines)
-
-	// 检测全局变量
 	info.Globals = ta.detectGlobalVars(info.Lines)
 
 	return info, scanner.Err()
 }
 
-// FileInfo 文件信息
+func (ta *TextAnalyzer) GetPatterns() *DetectorPatterns {
+	return ta.patterns
+}
+
+func (ta *TextAnalyzer) GetLanguage() Language {
+	return ta.language
+}
+
 type FileInfo struct {
 	Path      string
 	Language  Language
@@ -60,7 +71,6 @@ type FileInfo struct {
 	Globals   []*GlobalVarInfo
 }
 
-// FunctionInfo 函数信息
 type FunctionInfo struct {
 	Name      string
 	StartLine int
@@ -68,7 +78,6 @@ type FunctionInfo struct {
 	LineCount int
 }
 
-// GlobalVarInfo 全局变量信息
 type GlobalVarInfo struct {
 	Name       string
 	Line       int

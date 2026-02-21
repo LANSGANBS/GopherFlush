@@ -7,13 +7,11 @@ import (
 	"strings"
 )
 
-// REPL 交互式命令行
 type REPL struct {
 	registry *Registry
 	scanner  *bufio.Scanner
 }
 
-// NewREPL 创建新的 REPL
 func NewREPL(registry *Registry) *REPL {
 	return &REPL{
 		registry: registry,
@@ -21,16 +19,11 @@ func NewREPL(registry *Registry) *REPL {
 	}
 }
 
-// Start 启动交互式命令行
 func (r *REPL) Start() {
-	fmt.Println("GopherFlush - AI代码质量检测工具")
-	fmt.Println("========================================")
-	fmt.Println("输入 /help 查看可用命令")
-	fmt.Println("输入 /exit 退出程序")
-	fmt.Println()
+	r.printWelcome()
 
 	for {
-		fmt.Print("gopherflush> ")
+		fmt.Print(r.styledPrompt())
 
 		if !r.scanner.Scan() {
 			break
@@ -42,22 +35,52 @@ func (r *REPL) Start() {
 		}
 
 		if err := r.processLine(line); err != nil {
-			fmt.Printf("错误: %v\n", err)
+			fmt.Printf("%s错误:%s %v\n", ColorRed, ColorReset, err)
 		}
 	}
 }
 
-// processLine 处理输入行
+func (r *REPL) printWelcome() {
+	fmt.Println()
+
+	width := 60
+	fmt.Printf("%s%s%s\n", ColorCyan, strings.Repeat("─", width), ColorReset)
+
+	title := "GopherFlush"
+	subtitle := "AI 代码质量检测工具"
+	version := "v1.0.0"
+
+	padding := (width - len(title)) / 2
+	fmt.Printf("%s%s%s%s%s\n", ColorCyan, strings.Repeat(" ", padding), ColorBold+ColorWhite, title, ColorReset)
+
+	padding = (width - len(subtitle)) / 2
+	fmt.Printf("%s%s%s%s%s\n", ColorCyan, strings.Repeat(" ", padding), ColorDim, subtitle, ColorReset)
+
+	padding = (width - len(version)) / 2
+	fmt.Printf("%s%s%s%s%s\n", ColorCyan, strings.Repeat(" ", padding), ColorDim, version, ColorReset)
+
+	fmt.Printf("%s%s%s\n", ColorCyan, strings.Repeat("─", width), ColorReset)
+
+	fmt.Println()
+	fmt.Printf("  %s•%s 输入 %s/help%s 查看可用命令\n", ColorCyan, ColorReset, ColorCyan, ColorReset)
+	fmt.Printf("  %s•%s 输入 %s/exit%s 退出程序\n", ColorCyan, ColorReset, ColorCyan, ColorReset)
+	fmt.Println()
+
+	fmt.Printf("%s%s%s\n", ColorDim, strings.Repeat("─", width), ColorReset)
+	fmt.Println()
+}
+
+func (r *REPL) styledPrompt() string {
+	return fmt.Sprintf("%s❯%s ", ColorCyan, ColorReset)
+}
+
 func (r *REPL) processLine(line string) error {
-	// 检查是否是命令（以 / 开头）
 	if !strings.HasPrefix(line, "/") {
 		return fmt.Errorf("命令必须以 / 开头，例如: /help")
 	}
 
-	// 移除 / 前缀
 	line = strings.TrimPrefix(line, "/")
 
-	// 解析命令和参数
 	parts := strings.Fields(line)
 	if len(parts) == 0 {
 		return fmt.Errorf("请输入命令")
@@ -66,6 +89,5 @@ func (r *REPL) processLine(line string) error {
 	cmdName := parts[0]
 	args := parts[1:]
 
-	// 执行命令
 	return r.registry.Execute(cmdName, args)
 }
