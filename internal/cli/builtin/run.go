@@ -123,6 +123,10 @@ func (c *RunCommand) initializeRules(ruleNames string) *rules.Registry {
 		registry.Register(rulesBuiltin.NewDuplicatesRule())
 	}
 
+	if c.shouldEnableRule("cyclomatic-complexity", selectedRules, c.cfg.Rules.CyclomaticComplexity.Enabled) {
+		registry.Register(rulesBuiltin.NewCyclomaticComplexityRule())
+	}
+
 	return registry
 }
 

@@ -2,15 +2,16 @@ package analyzer
 
 import (
 	"bytes"
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
 	"gopherflush/internal/rules"
 	"gopherflush/pkg/types"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/cespare/xxhash/v2"
 )
 
 type Analyzer struct {
@@ -34,7 +35,7 @@ func (a *Analyzer) Analyze(path string) (*types.Report, error) {
 
 	enabledRules := a.registry.GetAll()
 	if len(enabledRules) == 0 {
-		return report, fmt.Errorf("没有启用的规则")
+		return report, fmt.Errorf("没有启用的规则: 请检查配置文件中的规则设置")
 	}
 
 	var filePaths []string
@@ -57,7 +58,7 @@ func (a *Analyzer) Analyze(path string) (*types.Report, error) {
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("遍历目录失败: %w", err)
+		return nil, fmt.Errorf("遍历目录 '%s' 失败: %w", path, err)
 	}
 
 	report.TotalFiles = len(filePaths)
@@ -130,6 +131,7 @@ func (a *Analyzer) buildRuleSet(enabledRules []rules.Rule) *ruleSet {
 func (a *Analyzer) analyzeGoFileFast(filePath string, enabledRules []rules.Rule) []*types.Violation {
 	file, err := a.parser.ParseFile(filePath)
 	if err != nil {
+		log.Printf("警告: 解析Go文件 '%s' 失败: %v", filePath, err)
 		return nil
 	}
 
@@ -149,6 +151,7 @@ func (a *Analyzer) analyzeTextFileFast(filePath string, lang Language, rs *ruleS
 
 	fileInfo, err := textAnalyzer.AnalyzeFile(filePath)
 	if err != nil {
+		log.Printf("警告: 分析文本文件 '%s' (语言: %s) 失败: %v", filePath, lang, err)
 		return nil
 	}
 
@@ -342,8 +345,8 @@ func normalizeTextFast(content string) string {
 }
 
 func calculateHashFast(content string) string {
-	hash := md5.Sum([]byte(content))
-	return hex.EncodeToString(hash[:])
+	hash := xxhash.Sum64String(content)
+	return fmt.Sprintf("%016x", hash)
 }
 
 func (a *Analyzer) AnalyzeFile(filePath string) (*types.Report, error) {
@@ -355,11 +358,12 @@ func (a *Analyzer) AnalyzeFile(filePath string) (*types.Report, error) {
 
 	enabledRules := a.registry.GetAll()
 	if len(enabledRules) == 0 {
-		return report, fmt.Errorf("没有启用的规则")
+		return report, fmt.Errorf("没有启用的规则: 请检查配置文件中的规则设置")
 	}
 
 	lang := DetectLanguage(filePath)
 	if lang == LanguageUnknown {
+		log.Printf("提示: 文件 '%s' 的语言类型未知，跳过分析", filePath)
 		return report, nil
 	}
 
@@ -376,99 +380,4 @@ func (a *Analyzer) AnalyzeFile(filePath string) (*types.Report, error) {
 	report.TotalViolations = len(violations)
 
 	return report, nil
-}
-
-func (a *Analyzer) analyzeGoFile(filePath string, enabledRules []rules.Rule, report *types.Report) error {
-	file, err := a.parser.ParseFile(filePath)
-	if err != nil {
-		fmt.Printf("警告: 解析文件 %s 失败: %v\n", filePath, err)
-		return nil
-	}
-
-	fset := a.parser.GetFileSet()
-	for _, rule := range enabledRules {
-		violations := rule.Check(file, fset, filePath)
-		report.Violations = append(report.Violations, violations...)
-		report.TotalViolations += len(violations)
-	}
-
-	return nil
-}
-
-func (a *Analyzer) analyzeTextFile(filePath string, lang Language, report *types.Report) error {
-	textAnalyzer := NewTextAnalyzer(lang)
-
-	fileInfo, err := textAnalyzer.AnalyzeFile(filePath)
-	if err != nil {
-		fmt.Printf("警告: 分析文件 %s 失败: %v\n", filePath, err)
-		return nil
-	}
-
-	if a.isRuleEnabled("file-size") {
-		a.checkFileSize(fileInfo, report)
-	}
-
-	if a.isRuleEnabled("function-size") {
-		a.checkFunctionSize(fileInfo, report)
-	}
-
-	if a.isRuleEnabled("global-vars") {
-		a.checkGlobalVars(fileInfo, report)
-	}
-
-	if a.isRuleEnabled("duplicates") {
-		a.checkDuplicates(fileInfo, report)
-	}
-
-	return nil
-}
-
-func (a *Analyzer) checkFileSize(fileInfo *FileInfo, report *types.Report) {
-	violations := a.checkFileSizeFast(fileInfo)
-	report.Violations = append(report.Violations, violations...)
-	report.TotalViolations += len(violations)
-}
-
-func (a *Analyzer) checkFunctionSize(fileInfo *FileInfo, report *types.Report) {
-	violations := a.checkFunctionSizeFast(fileInfo)
-	report.Violations = append(report.Violations, violations...)
-	report.TotalViolations += len(violations)
-}
-
-func (a *Analyzer) checkGlobalVars(fileInfo *FileInfo, report *types.Report) {
-	violations := a.checkGlobalVarsFast(fileInfo)
-	report.Violations = append(report.Violations, violations...)
-	report.TotalViolations += len(violations)
-}
-
-func (a *Analyzer) checkDuplicates(fileInfo *FileInfo, report *types.Report) {
-	violations := a.checkDuplicatesFast(fileInfo)
-	report.Violations = append(report.Violations, violations...)
-	report.TotalViolations += len(violations)
-}
-
-func (a *Analyzer) extractFunctionContent(lines []string, startLine, endLine int) string {
-	return extractFunctionContentFast(lines, startLine, endLine)
-}
-
-func (a *Analyzer) normalizeTextContent(content string) string {
-	return normalizeTextFast(content)
-}
-
-func (a *Analyzer) calculateTextHash(content string) string {
-	return calculateHashFast(content)
-}
-
-func (a *Analyzer) joinStrings(strs []string, sep string) string {
-	return strings.Join(strs, sep)
-}
-
-func (a *Analyzer) isRuleEnabled(ruleName string) bool {
-	rules := a.registry.GetAll()
-	for _, rule := range rules {
-		if rule.Name() == ruleName {
-			return true
-		}
-	}
-	return false
 }

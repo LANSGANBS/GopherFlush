@@ -7,45 +7,37 @@ import (
 	"strings"
 )
 
-// ResourceLeakRule 资源泄漏检测规则
 type ResourceLeakRule struct {
 	enabled bool
 }
 
-// NewResourceLeakRule 创建资源泄漏检测规则
 func NewResourceLeakRule() *ResourceLeakRule {
 	return &ResourceLeakRule{
 		enabled: true,
 	}
 }
 
-// Name 返回规则名称
 func (r *ResourceLeakRule) Name() string {
 	return "resource-leak"
 }
 
-// Description 返回规则描述
 func (r *ResourceLeakRule) Description() string {
 	return "检测未释放的资源（文件、连接、锁等）"
 }
 
-// Enabled 返回规则是否启用
 func (r *ResourceLeakRule) Enabled() bool {
 	return r.enabled
 }
 
-// Check 检查文件中的资源泄漏
 func (r *ResourceLeakRule) Check(file *ast.File, fset *token.FileSet, filePath string) []*types.Violation {
 	violations := []*types.Violation{}
 
-	// 遍历所有函数
 	ast.Inspect(file, func(n ast.Node) bool {
 		funcDecl, ok := n.(*ast.FuncDecl)
 		if !ok || funcDecl.Body == nil {
 			return true
 		}
 
-		// 检查函数体中的资源泄漏
 		leaks := r.checkFunctionBody(funcDecl, fset, filePath)
 		violations = append(violations, leaks...)
 
@@ -55,69 +47,71 @@ func (r *ResourceLeakRule) Check(file *ast.File, fset *token.FileSet, filePath s
 	return violations
 }
 
-// ResourceAllocation 资源分配信息
 type ResourceAllocation struct {
-	VarName      string // 变量名
-	ResourceType string // 资源类型（file, http, db, mutex等）
-	Line         int    // 行号
-	HasDefer     bool   // 是否有defer释放
+	VarName      string
+	ResourceType string
+	Line         int
+	IsHTTPBody   bool
 }
 
-// checkFunctionBody 检查函数体中的资源泄漏
+type deferInfo struct {
+	varName    string
+	methodName string
+	isClosure  bool
+	closureVars []string
+}
+
 func (r *ResourceLeakRule) checkFunctionBody(funcDecl *ast.FuncDecl, fset *token.FileSet, filePath string) []*types.Violation {
 	violations := []*types.Violation{}
 
-	// 收集资源分配
 	allocations := r.collectResourceAllocations(funcDecl.Body, fset)
 
-	// 收集defer语句
 	deferCalls := r.collectDeferCalls(funcDecl.Body)
 
-	// 检查每个资源分配是否有对应的defer释放
-	for _, alloc := range allocations {
-		if !r.hasMatchingDefer(alloc, deferCalls) {
-			severity := r.determineSeverity(alloc.ResourceType)
+	closedVars := r.collectExplicitCloses(funcDecl.Body)
 
-			violation := &types.Violation{
-				RuleName:   r.Name(),
-				Severity:   severity,
-				FilePath:   filePath,
-				Line:       alloc.Line,
-				Column:     1,
-				Message:    r.generateMessage(alloc),
-				Suggestion: r.generateSuggestion(alloc),
-			}
-			violations = append(violations, violation)
+	for _, alloc := range allocations {
+		if r.isResourceHandled(alloc, deferCalls, closedVars) {
+			continue
 		}
+
+		severity := r.determineSeverity(alloc.ResourceType)
+
+		violation := &types.Violation{
+			RuleName:   r.Name(),
+			Severity:   severity,
+			FilePath:   filePath,
+			Line:       alloc.Line,
+			Column:     1,
+			Message:    r.generateMessage(alloc),
+			Suggestion: r.generateSuggestion(alloc),
+		}
+		violations = append(violations, violation)
 	}
 
 	return violations
 }
 
-// collectResourceAllocations 收集资源分配
 func (r *ResourceLeakRule) collectResourceAllocations(body *ast.BlockStmt, fset *token.FileSet) []*ResourceAllocation {
 	allocations := []*ResourceAllocation{}
 
 	ast.Inspect(body, func(n ast.Node) bool {
-		// 查找赋值语句
 		assignStmt, ok := n.(*ast.AssignStmt)
 		if !ok {
 			return true
 		}
 
-		// 检查右侧是否是资源分配调用
 		for i, rhs := range assignStmt.Rhs {
 			if callExpr, ok := rhs.(*ast.CallExpr); ok {
-				resourceType := r.identifyResourceType(callExpr)
+				resourceType, isHTTPBody := r.identifyResourceType(callExpr)
 				if resourceType != "" && i < len(assignStmt.Lhs) {
-					// 获取变量名
 					varName := r.extractVarName(assignStmt.Lhs[i])
 					if varName != "" {
 						allocations = append(allocations, &ResourceAllocation{
 							VarName:      varName,
 							ResourceType: resourceType,
 							Line:         fset.Position(assignStmt.Pos()).Line,
-							HasDefer:     false,
+							IsHTTPBody:   isHTTPBody,
 						})
 					}
 				}
@@ -130,46 +124,51 @@ func (r *ResourceLeakRule) collectResourceAllocations(body *ast.BlockStmt, fset 
 	return allocations
 }
 
-// identifyResourceType 识别资源类型
-func (r *ResourceLeakRule) identifyResourceType(callExpr *ast.CallExpr) string {
-	// 获取函数调用的名称
+func (r *ResourceLeakRule) identifyResourceType(callExpr *ast.CallExpr) (string, bool) {
 	funcName := r.getFunctionName(callExpr)
 
-	// 文件操作
-	if strings.Contains(funcName, "os.Open") || strings.Contains(funcName, "os.Create") {
-		return "file"
+	if strings.Contains(funcName, "os.Open") || strings.Contains(funcName, "os.Create") ||
+		strings.Contains(funcName, "os.OpenFile") {
+		return "file", false
 	}
 
-	// HTTP请求
 	if strings.Contains(funcName, "http.Get") || strings.Contains(funcName, "http.Post") ||
-	   strings.Contains(funcName, "http.Do") {
-		return "http"
+		strings.Contains(funcName, "http.Do") || strings.Contains(funcName, "http.Head") {
+		return "http", true
 	}
 
-	// 数据库连接
-	if strings.Contains(funcName, "sql.Open") {
-		return "database"
+	if strings.Contains(funcName, "sql.Open") || strings.Contains(funcName, "sql.OpenDB") {
+		return "database", false
 	}
 
-	return ""
+	if strings.Contains(funcName, "net.Dial") || strings.Contains(funcName, "net.DialTimeout") {
+		return "network", false
+	}
+
+	if strings.Contains(funcName, "os.Exec") || strings.Contains(funcName, "exec.Command") {
+		return "process", false
+	}
+
+	return "", false
 }
 
-// getFunctionName 获取函数调用的名称
 func (r *ResourceLeakRule) getFunctionName(callExpr *ast.CallExpr) string {
 	switch fun := callExpr.Fun.(type) {
 	case *ast.SelectorExpr:
-		// 例如：os.Open, http.Get
 		if ident, ok := fun.X.(*ast.Ident); ok {
 			return ident.Name + "." + fun.Sel.Name
 		}
+		if selector, ok := fun.X.(*ast.SelectorExpr); ok {
+			if ident, ok := selector.X.(*ast.Ident); ok {
+				return ident.Name + "." + selector.Sel.Name + "." + fun.Sel.Name
+			}
+		}
 	case *ast.Ident:
-		// 例如：Open
 		return fun.Name
 	}
 	return ""
 }
 
-// extractVarName 提取变量名
 func (r *ResourceLeakRule) extractVarName(expr ast.Expr) string {
 	if ident, ok := expr.(*ast.Ident); ok {
 		return ident.Name
@@ -177,83 +176,180 @@ func (r *ResourceLeakRule) extractVarName(expr ast.Expr) string {
 	return ""
 }
 
-// collectDeferCalls 收集defer语句中释放的资源
-func (r *ResourceLeakRule) collectDeferCalls(body *ast.BlockStmt) []string {
-	deferVars := []string{}
+func (r *ResourceLeakRule) collectDeferCalls(body *ast.BlockStmt) []deferInfo {
+	deferInfos := []deferInfo{}
 
 	ast.Inspect(body, func(n ast.Node) bool {
-		// 查找defer语句
 		deferStmt, ok := n.(*ast.DeferStmt)
 		if !ok {
 			return true
 		}
 
-		// 提取被defer的变量名
-		varName := r.extractDeferVarName(deferStmt.Call)
-		if varName != "" {
-			deferVars = append(deferVars, varName)
+		info := r.analyzeDeferCall(deferStmt.Call)
+		if info.varName != "" || info.isClosure {
+			deferInfos = append(deferInfos, info)
 		}
 
 		return true
 	})
 
-	return deferVars
+	return deferInfos
 }
 
-// extractDeferVarName 从defer调用中提取变量名
-func (r *ResourceLeakRule) extractDeferVarName(callExpr *ast.CallExpr) string {
-	// 处理 defer file.Close() 这种形式
+func (r *ResourceLeakRule) analyzeDeferCall(callExpr *ast.CallExpr) deferInfo {
+	info := deferInfo{}
+
 	if selectorExpr, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
 		if ident, ok := selectorExpr.X.(*ast.Ident); ok {
-			return ident.Name
+			info.varName = ident.Name
+			info.methodName = selectorExpr.Sel.Name
+			return info
 		}
 	}
-	return ""
+
+	if funcLit, ok := callExpr.Fun.(*ast.FuncLit); ok {
+		info.isClosure = true
+		info.closureVars = r.extractClosedVarsInClosure(funcLit)
+		return info
+	}
+
+	return info
 }
 
-// hasMatchingDefer 检查资源分配是否有对应的defer释放
-func (r *ResourceLeakRule) hasMatchingDefer(alloc *ResourceAllocation, deferVars []string) bool {
-	for _, deferVar := range deferVars {
-		if deferVar == alloc.VarName {
+func (r *ResourceLeakRule) extractClosedVarsInClosure(funcLit *ast.FuncLit) []string {
+	vars := []string{}
+
+	ast.Inspect(funcLit.Body, func(n ast.Node) bool {
+		callExpr, ok := n.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+
+		if selectorExpr, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
+			if ident, ok := selectorExpr.X.(*ast.Ident); ok {
+				if selectorExpr.Sel.Name == "Close" || selectorExpr.Sel.Name == "CloseBody" {
+					vars = append(vars, ident.Name)
+				}
+			}
+		}
+
+		return true
+	})
+
+	return vars
+}
+
+func (r *ResourceLeakRule) collectExplicitCloses(body *ast.BlockStmt) []string {
+	closedVars := []string{}
+
+	ast.Inspect(body, func(n ast.Node) bool {
+		exprStmt, ok := n.(*ast.ExprStmt)
+		if !ok {
+			return true
+		}
+
+		callExpr, ok := exprStmt.X.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+
+		if selectorExpr, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
+			if selectorExpr.Sel.Name == "Close" {
+				if ident, ok := selectorExpr.X.(*ast.Ident); ok {
+					closedVars = append(closedVars, ident.Name)
+				}
+			}
+		}
+
+		return true
+	})
+
+	return closedVars
+}
+
+func (r *ResourceLeakRule) isResourceHandled(alloc *ResourceAllocation, deferCalls []deferInfo, closedVars []string) bool {
+	for _, dv := range closedVars {
+		if dv == alloc.VarName {
 			return true
 		}
 	}
+
+	for _, info := range deferCalls {
+		if info.varName == alloc.VarName {
+			return true
+		}
+
+		if info.isClosure {
+			for _, cv := range info.closureVars {
+				if cv == alloc.VarName {
+					return true
+				}
+				if alloc.IsHTTPBody && cv == alloc.VarName+".Body" {
+					return true
+				}
+			}
+		}
+
+		if alloc.IsHTTPBody && info.varName == alloc.VarName && info.methodName == "Close" {
+			return true
+		}
+	}
+
+	for _, info := range deferCalls {
+		if alloc.IsHTTPBody && info.varName == alloc.VarName && info.methodName == "Body" {
+			return true
+		}
+	}
+
 	return false
 }
 
-// determineSeverity 根据资源类型确定严重程度
 func (r *ResourceLeakRule) determineSeverity(resourceType string) types.Severity {
 	switch resourceType {
 	case "database":
-		return types.SeverityCritical // 数据库连接泄漏非常严重
+		return types.SeverityCritical
 	case "http":
-		return types.SeverityHigh // HTTP连接泄漏严重
+		return types.SeverityHigh
 	case "file":
-		return types.SeverityHigh // 文件描述符泄漏严重
+		return types.SeverityHigh
+	case "network":
+		return types.SeverityHigh
+	case "process":
+		return types.SeverityMedium
 	default:
 		return types.SeverityMedium
 	}
 }
 
-// generateMessage 生成违规消息
 func (r *ResourceLeakRule) generateMessage(alloc *ResourceAllocation) string {
 	resourceName := ""
 	switch alloc.ResourceType {
 	case "file":
-		resourceName = "文件"
+		resourceName = "文件句柄"
 	case "http":
 		resourceName = "HTTP响应"
 	case "database":
 		resourceName = "数据库连接"
+	case "network":
+		resourceName = "网络连接"
+	case "process":
+		resourceName = "进程"
 	default:
 		resourceName = "资源"
 	}
 
-	return "变量 '" + alloc.VarName + "' 分配了" + resourceName + "但没有使用defer进行释放"
+	if alloc.IsHTTPBody {
+		return "变量 '" + alloc.VarName + "' 包含HTTP响应，但未确保 Body 被正确关闭"
+	}
+
+	return "变量 '" + alloc.VarName + "' 分配了" + resourceName + "，但未确保资源被正确释放"
 }
 
-// generateSuggestion 生成修复建议
 func (r *ResourceLeakRule) generateSuggestion(alloc *ResourceAllocation) string {
+	if alloc.IsHTTPBody {
+		return "在获取响应后立即添加 defer " + alloc.VarName + ".Body.Close() 以确保响应体被正确关闭"
+	}
+
 	closeMethod := ""
 	switch alloc.ResourceType {
 	case "file":
@@ -262,6 +358,10 @@ func (r *ResourceLeakRule) generateSuggestion(alloc *ResourceAllocation) string 
 		closeMethod = alloc.VarName + ".Body.Close()"
 	case "database":
 		closeMethod = alloc.VarName + ".Close()"
+	case "network":
+		closeMethod = alloc.VarName + ".Close()"
+	case "process":
+		closeMethod = alloc.VarName + ".Wait()"
 	default:
 		closeMethod = alloc.VarName + ".Close()"
 	}

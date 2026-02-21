@@ -2,24 +2,25 @@ package config
 
 // Config 配置结构
 type Config struct {
-	Rules   RulesConfig   `yaml:"rules"`
-	Output  OutputConfig  `yaml:"output"`
-	Exclude []string      `yaml:"exclude"`
+	Rules   RulesConfig  `yaml:"rules"`
+	Output  OutputConfig `yaml:"output"`
+	Exclude []string     `yaml:"exclude"`
 }
 
 // RulesConfig 规则配置
 type RulesConfig struct {
-	FileSize            FileSizeConfig            `yaml:"file_size"`
-	FunctionSize        FunctionSizeConfig        `yaml:"function_size"`
-	GlobalVars          GlobalVarsConfig          `yaml:"global_vars"`
-	Duplicates          DuplicatesConfig          `yaml:"duplicates"`
-	CommentedCode       CommentedCodeConfig       `yaml:"commented_code"`
-	InconsistentComment InconsistentCommentConfig `yaml:"inconsistent_comment"`
-	ResourceLeak        ResourceLeakConfig        `yaml:"resource_leak"`
-	LooseTyping         LooseTypingConfig         `yaml:"loose_typing"`
-	InaccurateConstant  InaccurateConstantConfig  `yaml:"inaccurate_constant"`
-	MissingValidation   MissingValidationConfig   `yaml:"missing_validation"`
-	HardcodedSecrets    HardcodedSecretsConfig    `yaml:"hardcoded_secrets"`
+	FileSize             FileSizeConfig             `yaml:"file_size"`
+	FunctionSize         FunctionSizeConfig         `yaml:"function_size"`
+	GlobalVars           GlobalVarsConfig           `yaml:"global_vars"`
+	Duplicates           DuplicatesConfig           `yaml:"duplicates"`
+	CommentedCode        CommentedCodeConfig        `yaml:"commented_code"`
+	InconsistentComment  InconsistentCommentConfig  `yaml:"inconsistent_comment"`
+	ResourceLeak         ResourceLeakConfig         `yaml:"resource_leak"`
+	LooseTyping          LooseTypingConfig          `yaml:"loose_typing"`
+	InaccurateConstant   InaccurateConstantConfig   `yaml:"inaccurate_constant"`
+	MissingValidation    MissingValidationConfig    `yaml:"missing_validation"`
+	HardcodedSecrets     HardcodedSecretsConfig     `yaml:"hardcoded_secrets"`
+	CyclomaticComplexity CyclomaticComplexityConfig `yaml:"cyclomatic_complexity"`
 }
 
 // FileSizeConfig 文件大小规则配置
@@ -79,7 +80,11 @@ type HardcodedSecretsConfig struct {
 	Enabled bool `yaml:"enabled"`
 }
 
-// OutputConfig 输出配置
+type CyclomaticComplexityConfig struct {
+	Enabled       bool `yaml:"enabled"`
+	MaxComplexity int  `yaml:"max_complexity"`
+}
+
 type OutputConfig struct {
 	Format string `yaml:"format"` // console, json
 	Path   string `yaml:"path"`   // JSON输出路径

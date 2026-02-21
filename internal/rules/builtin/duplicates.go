@@ -1,14 +1,14 @@
 package builtin
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
 	"go/ast"
 	"go/printer"
 	"go/token"
 	"gopherflush/pkg/types"
 	"strings"
+
+	"github.com/cespare/xxhash/v2"
 )
 
 // DuplicatesRule 重复代码检测规则
@@ -145,8 +145,8 @@ func (r *DuplicatesRule) normalizeContent(content string) string {
 
 // calculateHash 计算内容的哈希值
 func (r *DuplicatesRule) calculateHash(content string) string {
-	hash := md5.Sum([]byte(content))
-	return hex.EncodeToString(hash[:])
+	hash := xxhash.Sum64String(content)
+	return fmt.Sprintf("%016x", hash)
 }
 
 // findDuplicateFunctions 查找重复的函数

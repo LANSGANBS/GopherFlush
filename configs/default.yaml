@@ -19,6 +19,11 @@ rules:
   duplicates:
     enabled: true
 
+  # 圈复杂度检测
+  cyclomatic_complexity:
+    enabled: true
+    max_complexity: 15
+
 # 输出配置
 output:
   format: console # console 或 json
