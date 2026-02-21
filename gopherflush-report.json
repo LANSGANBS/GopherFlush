@@ -4,105 +4,6 @@
   "Violations": [
     {
       "RuleName": "global-vars",
-      "Severity": 1,
-      "FilePath": "test\\commented_code_test.go",
-      "Line": 18,
-      "Column": 5,
-      "Message": "检测到全局变量 'newConfig'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 2,
-      "FilePath": "test\\commented_code_test.go",
-      "Line": 5,
-      "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 0,
-      "FilePath": "test\\commented_code_test.go",
-      "Line": 6,
-      "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 0,
-      "FilePath": "test\\commented_code_test.go",
-      "Line": 7,
-      "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 1,
-      "FilePath": "test\\commented_code_test.go",
-      "Line": 17,
-      "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 1,
-      "FilePath": "test\\commented_code_test.go",
-      "Line": 20,
-      "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 0,
-      "FilePath": "test\\commented_code_test.go",
-      "Line": 27,
-      "Column": 2,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 0,
-      "FilePath": "test\\commented_code_test.go",
-      "Line": 29,
-      "Column": 2,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "inconsistent-comment",
-      "Severity": 1,
-      "FilePath": "test\\commented_code_test.go",
-      "Line": 20,
-      "Column": 1,
-      "Message": "检测到注释与代码不一致：注释中提到的数字 '3' 与代码中的实际值不匹配",
-      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
-    },
-    {
-      "RuleName": "duplicates",
-      "Severity": 1,
-      "FilePath": "test\\duplicates_test.go",
-      "Line": 8,
-      "Column": 1,
-      "Message": "检测到 2 个重复函数: ProcessUserData, ProcessCustomerData",
-      "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
-    },
-    {
-      "RuleName": "duplicates",
-      "Severity": 1,
-      "FilePath": "test\\duplicates_test.go",
-      "Line": 28,
-      "Column": 1,
-      "Message": "检测到 2 个重复函数: ValidateEmail, CheckEmail",
-      "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
-    },
-    {
-      "RuleName": "global-vars",
       "Severity": 2,
       "FilePath": "test\\edge_cases_test.go",
       "Line": 3,
@@ -192,58 +93,148 @@
       "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
-      "RuleName": "global-vars",
-      "Severity": 2,
-      "FilePath": "test\\global_vars_test.go",
-      "Line": 6,
-      "Column": 5,
-      "Message": "检测到全局变量 'GlobalConfig'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "global-vars",
-      "Severity": 2,
-      "FilePath": "test\\global_vars_test.go",
-      "Line": 7,
-      "Column": 5,
-      "Message": "检测到全局变量 'GlobalCounter'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "global-vars",
+      "RuleName": "inconsistent-comment",
       "Severity": 1,
-      "FilePath": "test\\global_vars_test.go",
-      "Line": 10,
-      "Column": 5,
-      "Message": "检测到全局变量 'internalCache'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+      "FilePath": "test\\inconsistent_comment_test.go",
+      "Line": 5,
+      "Column": 1,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '5' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
     },
     {
-      "RuleName": "global-vars",
+      "RuleName": "inconsistent-comment",
       "Severity": 1,
-      "FilePath": "test\\global_vars_test.go",
+      "FilePath": "test\\inconsistent_comment_test.go",
+      "Line": 8,
+      "Column": 1,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '30' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\inconsistent_comment_test.go",
       "Line": 11,
+      "Column": 1,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '1024' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\inconsistent_comment_test.go",
+      "Line": 9,
       "Column": 5,
-      "Message": "检测到全局变量 'debugMode'",
+      "Message": "检测到全局变量 'Timeout'",
       "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
       "RuleName": "global-vars",
       "Severity": 2,
-      "FilePath": "test\\hardcoded_secrets_test.go",
-      "Line": 10,
+      "FilePath": "test\\inconsistent_comment_test.go",
+      "Line": 12,
       "Column": 5,
-      "Message": "检测到全局变量 'DBConnection'",
+      "Message": "检测到全局变量 'BufferSize'",
       "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
-      "RuleName": "global-vars",
+      "RuleName": "commented-code",
       "Severity": 2,
-      "FilePath": "test\\hardcoded_secrets_test.go",
-      "Line": 13,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 5,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 6,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 7,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 1,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 17,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 1,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 20,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 27,
+      "Column": 2,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 29,
+      "Column": 2,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 20,
+      "Column": 1,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '3' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "test\\commented_code_test.go",
+      "Line": 18,
       "Column": 5,
-      "Message": "检测到全局变量 'SecretKey'",
+      "Message": "检测到全局变量 'newConfig'",
       "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "duplicates",
+      "Severity": 1,
+      "FilePath": "test\\duplicates_test.go",
+      "Line": 8,
+      "Column": 1,
+      "Message": "检测到 2 个重复函数: ProcessUserData, ProcessCustomerData",
+      "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
+    },
+    {
+      "RuleName": "duplicates",
+      "Severity": 1,
+      "FilePath": "test\\duplicates_test.go",
+      "Line": 28,
+      "Column": 1,
+      "Message": "检测到 2 个重复函数: ValidateEmail, CheckEmail",
+      "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
     },
     {
       "RuleName": "hardcoded-secrets",
@@ -291,94 +282,58 @@
       "Suggestion": "将URL配置移到配置文件或环境变量中"
     },
     {
-      "RuleName": "commented-code",
-      "Severity": 0,
-      "FilePath": "test\\inaccurate_constant_test.go",
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\hardcoded_secrets_test.go",
+      "Line": 10,
+      "Column": 5,
+      "Message": "检测到全局变量 'DBConnection'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\hardcoded_secrets_test.go",
       "Line": 13,
-      "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "commented-code",
-      "Severity": 1,
-      "FilePath": "test\\inaccurate_constant_test.go",
-      "Line": 14,
-      "Column": 1,
-      "Message": "检测到被注释掉的代码，建议删除而不是注释",
-      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
-    },
-    {
-      "RuleName": "inaccurate-constant",
-      "Severity": 2,
-      "FilePath": "test\\inaccurate_constant_test.go",
-      "Line": 4,
-      "Column": 12,
-      "Message": "常量 'PI' 的值不准确，当前值: 3.14159265353846，正确值应为: 3.141592653589793",
-      "Suggestion": "使用更准确的常量值，或使用标准库中的常量（如 math.Pi）"
-    },
-    {
-      "RuleName": "inconsistent-comment",
-      "Severity": 1,
-      "FilePath": "test\\inaccurate_constant_test.go",
-      "Line": 4,
-      "Column": 29,
-      "Message": "检测到注释与代码不一致：注释中提到的数字 '3.14159265358979' 与代码中的实际值不匹配",
-      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
-    },
-    {
-      "RuleName": "global-vars",
-      "Severity": 2,
-      "FilePath": "test\\inconsistent_comment_test.go",
-      "Line": 9,
       "Column": 5,
-      "Message": "检测到全局变量 'Timeout'",
+      "Message": "检测到全局变量 'SecretKey'",
       "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
-      "RuleName": "global-vars",
+      "RuleName": "resource-leak",
       "Severity": 2,
-      "FilePath": "test\\inconsistent_comment_test.go",
-      "Line": 12,
-      "Column": 5,
-      "Message": "检测到全局变量 'BufferSize'",
-      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
-    },
-    {
-      "RuleName": "inconsistent-comment",
-      "Severity": 1,
-      "FilePath": "test\\inconsistent_comment_test.go",
-      "Line": 5,
-      "Column": 1,
-      "Message": "检测到注释与代码不一致：注释中提到的数字 '5' 与代码中的实际值不匹配",
-      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
-    },
-    {
-      "RuleName": "inconsistent-comment",
-      "Severity": 1,
-      "FilePath": "test\\inconsistent_comment_test.go",
-      "Line": 8,
-      "Column": 1,
-      "Message": "检测到注释与代码不一致：注释中提到的数字 '30' 与代码中的实际值不匹配",
-      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
-    },
-    {
-      "RuleName": "inconsistent-comment",
-      "Severity": 1,
-      "FilePath": "test\\inconsistent_comment_test.go",
+      "FilePath": "test\\resource_leak_test.go",
       "Line": 11,
       "Column": 1,
-      "Message": "检测到注释与代码不一致：注释中提到的数字 '1024' 与代码中的实际值不匹配",
-      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+      "Message": "变量 'file' 分配了文件但没有使用defer进行释放",
+      "Suggestion": "在资源分配后立即添加 defer file.Close() 以确保资源被正确释放"
     },
     {
-      "RuleName": "inconsistent-comment",
+      "RuleName": "resource-leak",
+      "Severity": 2,
+      "FilePath": "test\\resource_leak_test.go",
+      "Line": 25,
+      "Column": 1,
+      "Message": "变量 'resp' 分配了HTTP响应但没有使用defer进行释放",
+      "Suggestion": "在资源分配后立即添加 defer resp.Body.Close() 以确保资源被正确释放"
+    },
+    {
+      "RuleName": "resource-leak",
+      "Severity": 3,
+      "FilePath": "test\\resource_leak_test.go",
+      "Line": 39,
+      "Column": 1,
+      "Message": "变量 'db' 分配了数据库连接但没有使用defer进行释放",
+      "Suggestion": "在资源分配后立即添加 defer db.Close() 以确保资源被正确释放"
+    },
+    {
+      "RuleName": "duplicates",
       "Severity": 1,
-      "FilePath": "test\\large_function.go",
-      "Line": 7,
-      "Column": 2,
-      "Message": "检测到注释与代码不一致：注释中提到的数字 '200' 与代码中的实际值不匹配",
-      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+      "FilePath": "test\\loose_typing_test.go",
+      "Line": 4,
+      "Column": 1,
+      "Message": "检测到 3 个重复函数: StoreUserInfo, GetConfig, SaveUser",
+      "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
     },
     {
       "RuleName": "commented-code",
@@ -435,15 +390,6 @@
       "Suggestion": "使用具体的类型或定义明确的接口，以提供更好的类型安全性"
     },
     {
-      "RuleName": "duplicates",
-      "Severity": 1,
-      "FilePath": "test\\loose_typing_test.go",
-      "Line": 4,
-      "Column": 1,
-      "Message": "检测到 3 个重复函数: StoreUserInfo, GetConfig, SaveUser",
-      "Suggestion": "考虑提取公共逻辑到一个函数中，避免代码重复"
-    },
-    {
       "RuleName": "missing-validation",
       "Severity": 2,
       "FilePath": "test\\missing_validation_test.go",
@@ -498,31 +444,85 @@
       "Suggestion": "使用参数化查询（PreparedStatement）或对输入进行严格验证"
     },
     {
-      "RuleName": "resource-leak",
+      "RuleName": "commented-code",
+      "Severity": 0,
+      "FilePath": "test\\inaccurate_constant_test.go",
+      "Line": 13,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "commented-code",
+      "Severity": 1,
+      "FilePath": "test\\inaccurate_constant_test.go",
+      "Line": 14,
+      "Column": 1,
+      "Message": "检测到被注释掉的代码，建议删除而不是注释",
+      "Suggestion": "如果代码不再需要，应该直接删除；如果需要保留历史，使用版本控制系统（如Git）"
+    },
+    {
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\inaccurate_constant_test.go",
+      "Line": 4,
+      "Column": 29,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '3.14159265358979' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
+    },
+    {
+      "RuleName": "inaccurate-constant",
       "Severity": 2,
-      "FilePath": "test\\resource_leak_test.go",
+      "FilePath": "test\\inaccurate_constant_test.go",
+      "Line": 4,
+      "Column": 12,
+      "Message": "常量 'PI' 的值不准确，当前值: 3.14159265353846，正确值应为: 3.141592653589793",
+      "Suggestion": "使用更准确的常量值，或使用标准库中的常量（如 math.Pi）"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\global_vars_test.go",
+      "Line": 6,
+      "Column": 5,
+      "Message": "检测到全局变量 'GlobalConfig'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 2,
+      "FilePath": "test\\global_vars_test.go",
+      "Line": 7,
+      "Column": 5,
+      "Message": "检测到全局变量 'GlobalCounter'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "test\\global_vars_test.go",
+      "Line": 10,
+      "Column": 5,
+      "Message": "检测到全局变量 'internalCache'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
+    },
+    {
+      "RuleName": "global-vars",
+      "Severity": 1,
+      "FilePath": "test\\global_vars_test.go",
       "Line": 11,
-      "Column": 1,
-      "Message": "变量 'file' 分配了文件但没有使用defer进行释放",
-      "Suggestion": "在资源分配后立即添加 defer file.Close() 以确保资源被正确释放"
+      "Column": 5,
+      "Message": "检测到全局变量 'debugMode'",
+      "Suggestion": "考虑将全局变量改为局部变量、函数参数或使用依赖注入模式"
     },
     {
-      "RuleName": "resource-leak",
-      "Severity": 2,
-      "FilePath": "test\\resource_leak_test.go",
-      "Line": 25,
-      "Column": 1,
-      "Message": "变量 'resp' 分配了HTTP响应但没有使用defer进行释放",
-      "Suggestion": "在资源分配后立即添加 defer resp.Body.Close() 以确保资源被正确释放"
-    },
-    {
-      "RuleName": "resource-leak",
-      "Severity": 3,
-      "FilePath": "test\\resource_leak_test.go",
-      "Line": 39,
-      "Column": 1,
-      "Message": "变量 'db' 分配了数据库连接但没有使用defer进行释放",
-      "Suggestion": "在资源分配后立即添加 defer db.Close() 以确保资源被正确释放"
+      "RuleName": "inconsistent-comment",
+      "Severity": 1,
+      "FilePath": "test\\large_function.go",
+      "Line": 7,
+      "Column": 2,
+      "Message": "检测到注释与代码不一致：注释中提到的数字 '200' 与代码中的实际值不匹配",
+      "Suggestion": "更新注释以匹配代码的实际行为，或修正代码以匹配注释的描述"
     }
   ]
 }

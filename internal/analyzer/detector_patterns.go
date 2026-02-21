@@ -1,6 +1,21 @@
 package analyzer
 
-import "regexp"
+import (
+	"regexp"
+	"sync"
+)
+
+var (
+	globalPatternRegistry *PatternRegistry
+	patternOnce           sync.Once
+)
+
+func GetGlobalPatternRegistry() *PatternRegistry {
+	patternOnce.Do(func() {
+		globalPatternRegistry = NewPatternRegistry()
+	})
+	return globalPatternRegistry
+}
 
 type DetectorPatterns struct {
 	FuncPattern   *regexp.Regexp
@@ -52,10 +67,10 @@ type PatternRegistry struct {
 func NewPatternRegistry() *PatternRegistry {
 	return &PatternRegistry{
 		patterns: map[Language]*DetectorPatterns{
-			LanguageC:     NewCPatterns(),
-			LanguageCPP:   NewCPatterns(),
+			LanguageC:      NewCPatterns(),
+			LanguageCPP:    NewCPatterns(),
 			LanguagePython: NewPythonPatterns(),
-			LanguageJava:  NewJavaPatterns(),
+			LanguageJava:   NewJavaPatterns(),
 		},
 	}
 }

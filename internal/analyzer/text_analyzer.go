@@ -6,13 +6,13 @@ import (
 )
 
 type TextAnalyzer struct {
-	language       Language
-	patterns       *DetectorPatterns
+	language        Language
+	patterns        *DetectorPatterns
 	patternRegistry *PatternRegistry
 }
 
 func NewTextAnalyzer(language Language) *TextAnalyzer {
-	registry := NewPatternRegistry()
+	registry := GetGlobalPatternRegistry()
 	return &TextAnalyzer{
 		language:        language,
 		patterns:        registry.Get(language),
@@ -38,15 +38,53 @@ func (ta *TextAnalyzer) AnalyzeFile(filePath string) (*FileInfo, error) {
 	info := &FileInfo{
 		Path:      filePath,
 		Language:  ta.language,
-		Lines:     []string{},
+		Lines:     make([]string, 0, 1000),
 		Functions: []*FunctionInfo{},
 		Globals:   []*GlobalVarInfo{},
 	}
 
 	scanner := bufio.NewScanner(file)
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, 10*1024*1024)
+
 	for scanner.Scan() {
 		line := scanner.Text()
 		info.Lines = append(info.Lines, line)
+	}
+
+	info.Functions = ta.detectFunctions(info.Lines)
+	info.Globals = ta.detectGlobalVars(info.Lines)
+
+	return info, scanner.Err()
+}
+
+func (ta *TextAnalyzer) AnalyzeFileStreaming(filePath string, onLine func(line string, lineNum int)) (*FileInfo, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	info := &FileInfo{
+		Path:      filePath,
+		Language:  ta.language,
+		Lines:     make([]string, 0, 1000),
+		Functions: []*FunctionInfo{},
+		Globals:   []*GlobalVarInfo{},
+	}
+
+	scanner := bufio.NewScanner(file)
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, 10*1024*1024)
+
+	lineNum := 0
+	for scanner.Scan() {
+		line := scanner.Text()
+		info.Lines = append(info.Lines, line)
+		lineNum++
+		if onLine != nil {
+			onLine(line, lineNum)
+		}
 	}
 
 	info.Functions = ta.detectFunctions(info.Lines)
